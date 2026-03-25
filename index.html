@@ -2,32 +2,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Streaming App V5 Netflix Clone</title><style>
+<title>NZM FLIX🇵🇭</title><style>
 body{margin:0;font-family:Arial;background:#0b0c10;color:white}
 header{padding:12px;background:#000;display:flex;justify-content:space-between;align-items:center}
-input{padding:8px 12px;width:180px;border-radius:20px;border:none}
-.hero{height:50vh;background-size:cover;display:flex;flex-direction:column;justify-content:flex-end;padding:15px}
-.hero h2{margin:0}
-.hero p{font-size:14px;max-width:500px}
+input{padding:8px 12px;width:180px;border-radius:20px;border:none;background:#222;color:white}
+.hero{height:50vh;background-size:cover;display:flex;flex-direction:column;justify-content:flex-end;padding:15px;background-position:center;transition:all .5s}
+.hero h2{margin:0;font-size:24px;text-shadow:2px 2px 4px black}
+.hero p{font-size:14px;max-width:600px;text-shadow:1px 1px 3px black}
 .section{padding:10px}
 .grid{display:flex;gap:10px;overflow-x:auto}
-.card{min-width:130px;cursor:pointer;transition:.3s;position:relative}
+.card{min-width:130px;cursor:pointer;transition:.3s;position:relative;border-radius:10px;overflow:hidden}
 .card:hover{transform:scale(1.08)}
-.card img{width:100%;border-radius:10px}
-.hoverPreview{position:absolute;top:0;left:0;width:100%;height:100%;background:black;opacity:0;transition:.3s;display:flex;align-items:center;justify-content:center}
-.card:hover .hoverPreview{opacity:.7}
+.card img{width:100%;border-radius:10px;display:block}
+.hoverPreview{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);opacity:0;transition:.3s;display:flex;align-items:center;justify-content:center;font-size:20px}
+.card:hover .hoverPreview{opacity:1}
 
-.player{position:fixed;top:0;left:0;width:100%;height:100%;background:black;display:none;flex-direction:column;z-index:999}
-.videoWrapper{position:relative;width:100%;padding-top:56.25%}
-.videoWrapper iframe{position:absolute;top:0;left:0;width:100%;height:100%}
-.controls{padding:8px;background:#111;display:flex;gap:8px}
-.details{padding:10px}
-.episodes{display:flex;flex-wrap:wrap;gap:6px}
-.episodes button{background:#222;color:white}
-button{padding:6px 10px;border:none;border-radius:5px;cursor:pointer}
-
-</style></head><body><header>
-<h3>StreamX V5</h3>
+.player{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;display:none;flex-direction:column;z-index:999}
+.videoWrapper{position:relative;width:100%;padding-top:56.25%;background:black;box-shadow:0 0 20px #000}
+.videoWrapper iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:10px;box-shadow:0 0 20px #000}
+.controls{padding:10px;background:#111;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.details{padding:10px;background:#111;border-radius:10px;margin:10px 0}
+.episodes{display:flex;flex-wrap:wrap;gap:10px}
+.episode-card{background:#222;color:white;padding:6px;border-radius:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;transition:.3s;width:120px}
+.episode-card:hover{background:#333;transform:scale(1.05)}
+.episode-card img{width:100%;border-radius:8px;margin-bottom:5px}
+button{padding:6px 10px;border:none;border-radius:5px;cursor:pointer;background:#e50914;color:white;font-weight:bold}
+select{padding:5px;border-radius:5px;background:#222;color:white}
+@media(max-width:600px){
+.hero{height:40vh;font-size:16px}
+.card{min-width:110px}
+.episode-card{width:90px}
+}
+</style></head><body>
+<header>
+<h3>NZM FLIX🇵🇭</h3>
 <input id="search" placeholder="Search...">
 </header><div class="hero" id="hero"></div><div class="section"><h3>Trending</h3><div class="grid" id="trending"></div></div>
 <div class="section"><h3>Top Rated</h3><div class="grid" id="top"></div></div>
@@ -67,9 +75,10 @@ async function loadHome(){
 }
 
 function setHero(i){const h=document.getElementById("hero");
-h.style.backgroundImage=`url(${IMG+i.backdrop_path})`;
-h.innerHTML=`<h2>${i.title||i.name}</h2><p>${i.overview||""}</p>`;
-h.onclick=()=>openPlayer(i)}
+ h.style.backgroundImage=`url(${IMG+i.backdrop_path})`;
+ h.innerHTML=`<h2>${i.title||i.name}</h2><p>${i.overview||""}</p>`;
+ h.onclick=()=>openPlayer(i);
+}
 
 function display(list,id){const c=document.getElementById(id);c.innerHTML="";list.forEach(i=>{
  if(!i.poster_path)return;
@@ -83,7 +92,6 @@ function openPlayer(i){current=i;document.getElementById("player").style.display
 saveContinue(i);
 document.getElementById("details").innerHTML=`<h3>${i.title||i.name}</h3><p>${i.overview||"No description"}</p>`;
 document.getElementById("episodes").innerHTML="";
-
 if(i.media_type==="tv"||i.first_air_date){loadTV(i.id)}
 else playMovie(i.id);
 }
@@ -108,8 +116,9 @@ async function loadEpisodes(id,sn){
  const d=await fetchData(`https://api.themoviedb.org/3/tv/${id}/season/${sn}?api_key=${API_KEY}`);
  const box=document.getElementById("episodes");box.innerHTML="";
  d.episodes.forEach(e=>{
- const b=document.createElement("button");
- b.textContent="Ep "+e.episode_number;
+ const b=document.createElement("div");
+ b.className="episode-card";
+ b.innerHTML=`<img src='${IMG+e.still_path}' alt='Ep ${e.episode_number}'><span>Ep ${e.episode_number}</span>`;
  b.onclick=()=>autoPlay([
  `https://vidsync.xyz/embed/tv/${id}/${sn}/${e.episode_number}`,
  `https://vidsrc.to/embed/tv/${id}/${sn}/${e.episode_number}`,
