@@ -9,22 +9,26 @@
 body{
  margin:0;
  font-family:Arial;
- background:#0b0c10;
+ background:#141414;
  color:white;
+ overflow-x:hidden;
 }
 
 /* HEADER */
 header{
- padding:12px;
- background:#000;
+ position:fixed;
+ width:100%;
+ top:0;
+ z-index:100;
+ padding:10px 20px;
  display:flex;
  justify-content:space-between;
  align-items:center;
+ background:linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
 }
 
 input{
- padding:8px 12px;
- width:180px;
+ padding:6px 12px;
  border-radius:20px;
  border:none;
  background:#222;
@@ -33,27 +37,43 @@ input{
 
 /* HERO */
 .hero{
- height:50vh;
- background-size:cover;
+ height:70vh;
  display:flex;
  flex-direction:column;
  justify-content:flex-end;
- padding:15px;
+ padding:40px;
+ background-size:cover;
  background-position:center;
- transition:all .5s ease;
- animation:fadeIn 1s;
+ position:relative;
 }
 
-/* ANIMATION */
-@keyframes fadeIn{
- from{opacity:0;transform:translateY(20px)}
- to{opacity:1;transform:translateY(0)}
+.hero::after{
+ content:"";
+ position:absolute;
+ bottom:0;
+ left:0;
+ width:100%;
+ height:100%;
+ background:linear-gradient(to top,#141414,transparent);
+}
+
+.hero h2{
+ z-index:2;
+ font-size:40px;
+ margin:0;
+}
+
+.hero p{
+ z-index:2;
+ max-width:600px;
 }
 
 /* SECTIONS */
-.section{padding:10px}
+.section{
+ padding:20px;
+ margin-top:20px;
+}
 
-/* GRID */
 .grid{
  display:flex;
  gap:10px;
@@ -62,63 +82,40 @@ input{
 
 /* CARD */
 .card{
- min-width:150px;
- border-radius:12px;
- overflow:hidden;
+ min-width:160px;
+ height:240px;
  position:relative;
  cursor:pointer;
- transition:.3s;
+ transition:.4s;
+ border-radius:10px;
+ overflow:hidden;
 }
 
-.card:hover{
- transform:scale(1.1);
- z-index:10;
-}
-
-/* IMAGE */
 .card img{
  width:100%;
- height:220px;
+ height:100%;
  object-fit:cover;
 }
 
-/* PLAY BUTTON OVERLAY */
-.playBtn{
+/* HOVER EXPAND */
+.card:hover{
+ transform:scale(1.3);
+ z-index:20;
+}
+
+/* OVERLAY */
+.overlay{
  position:absolute;
- top:50%;
- left:50%;
- transform:translate(-50%,-50%);
- font-size:30px;
- background:rgba(0,0,0,0.6);
- border-radius:50%;
- padding:10px 15px;
+ bottom:0;
+ width:100%;
+ background:linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+ padding:10px;
  opacity:0;
  transition:.3s;
 }
 
-.card:hover .playBtn{
+.card:hover .overlay{
  opacity:1;
-}
-
-/* RATING */
-.rating{
- position:absolute;
- bottom:5px;
- left:5px;
- font-size:12px;
- background:rgba(0,0,0,0.7);
- padding:2px 6px;
- border-radius:5px;
-}
-
-/* PROGRESS BAR */
-.progress{
- position:absolute;
- bottom:0;
- left:0;
- height:4px;
- background:red;
- width:0%;
 }
 
 /* PLAYER */
@@ -128,10 +125,11 @@ input{
  left:0;
  width:100%;
  height:100%;
- background:#000;
+ background:black;
  display:none;
  flex-direction:column;
  z-index:999;
+ overflow-y:auto;
 }
 
 .videoWrapper{
@@ -146,37 +144,25 @@ input{
  height:100%;
 }
 
-/* CONTROLS */
-.controls{
- padding:10px;
- background:#111;
- display:flex;
- gap:10px;
- flex-wrap:wrap;
-}
-
 /* DETAILS */
 .details{
- padding:10px;
- background:#111;
- margin:10px;
- border-radius:10px;
+ padding:20px;
 }
 
-/* EPISODES NETFLIX STYLE */
+/* EPISODES */
 .episodes{
  display:flex;
  flex-direction:column;
  gap:10px;
- padding:10px;
+ padding:20px;
 }
 
 .episode-card{
  display:flex;
  gap:10px;
- background:#1a1a1a;
- padding:10px;
+ background:#1f1f1f;
  border-radius:10px;
+ overflow:hidden;
  cursor:pointer;
  transition:.3s;
 }
@@ -186,16 +172,31 @@ input{
 }
 
 .episode-card img{
- width:120px;
- height:70px;
+ width:140px;
+ height:80px;
  object-fit:cover;
- border-radius:8px;
+}
+
+/* BUTTONS */
+.controls{
+ padding:10px;
+ display:flex;
+ gap:10px;
+}
+
+button{
+ background:#e50914;
+ border:none;
+ color:white;
+ padding:6px 12px;
+ border-radius:5px;
+ cursor:pointer;
 }
 
 /* MOBILE */
 @media(max-width:600px){
- .card{min-width:120px}
- .card img{height:180px}
+ .hero{height:50vh;padding:20px}
+ .card{min-width:120px;height:180px}
 }
 </style>
 </head>
@@ -203,28 +204,26 @@ input{
 <body>
 
 <header>
-<h3>NZM FLIX🇵🇭</h3>
-<input id="search" placeholder="Search...">
+<h3>NZM FLIX</h3>
+<input id="search" placeholder="Search">
 </header>
 
 <div class="hero" id="hero"></div>
 
 <div class="section"><h3>Trending</h3><div class="grid" id="trending"></div></div>
 <div class="section"><h3>Top Rated</h3><div class="grid" id="top"></div></div>
-<div class="section"><h3>🎬 Action</h3><div class="grid" id="action"></div></div>
-<div class="section"><h3>😂 Comedy</h3><div class="grid" id="comedy"></div></div>
-<div class="section"><h3>🇵🇭 Filipino Picks</h3><div class="grid" id="ph"></div></div>
-<div class="section"><h3>Continue ▶</h3><div class="grid" id="continue"></div></div>
+<div class="section"><h3>Action</h3><div class="grid" id="action"></div></div>
+<div class="section"><h3>Comedy</h3><div class="grid" id="comedy"></div></div>
+<div class="section"><h3>Continue Watching</h3><div class="grid" id="continue"></div></div>
 
 <div class="player" id="player">
 <div class="controls">
 <button onclick="closePlayer()">Close</button>
-<button onclick="addFav()">❤️</button>
 <select id="season"></select>
 </div>
 
 <div class="videoWrapper">
-<iframe id="frame" allowfullscreen></iframe>
+<iframe id="frame"></iframe>
 </div>
 
 <div class="details" id="details"></div>
@@ -236,28 +235,21 @@ const API_KEY="2f7637ba9b3253a84483afa03480473a";
 const IMG="https://image.tmdb.org/t/p/original";
 let current={};
 
-const sources=[
- id=>`https://vidsync.xyz/embed/movie/${id}`,
- id=>`https://vidsrc.to/embed/movie/${id}`
-];
-
 function save(k,d){localStorage.setItem(k,JSON.stringify(d))}
 function load(k){return JSON.parse(localStorage.getItem(k)||"[]")}
 async function fetchData(u){return (await fetch(u)).json()}
 
-/* HOME */
+/* LOAD HOME */
 async function loadHome(){
  const t=await fetchData(`https://api.themoviedb.org/3/trending/all/day?api_key=${API_KEY}`);
  const top=await fetchData(`https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}`);
  const action=await fetchData(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=28`);
  const comedy=await fetchData(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=35`);
- const ph=await fetchData(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_origin_country=PH`);
 
  display(t.results,"trending");
  display(top.results,"top");
  display(action.results,"action");
  display(comedy.results,"comedy");
- display(ph.results,"ph");
 
  setHero(t.results[0]);
  loadContinue();
@@ -275,61 +267,25 @@ function display(list,id){
  const c=document.getElementById(id);
  c.innerHTML="";
 
- const cont=load("cont");
-
  list.forEach(i=>{
   if(!i.poster_path)return;
-
-  const progressItem=cont.find(x=>x.id===i.id);
-  const progress=progressItem?.progress||0;
 
   const d=document.createElement("div");
   d.className="card";
 
+  const year=(i.release_date||i.first_air_date||"").split("-")[0];
+
   d.innerHTML=`
    <img src="${IMG+i.poster_path}">
-   <div class="playBtn">▶</div>
-   <div class="rating">⭐ ${i.vote_average||"N/A"}</div>
-   <div class="progress" style="width:${progress}%"></div>
+   <div class="overlay">
+    <b>${i.title||i.name}</b><br>
+    ⭐ ${i.vote_average} • ${year}
+   </div>
   `;
 
   d.onclick=()=>openPlayer(i);
-
-  /* TRAILER PREVIEW */
-  d.onmouseenter=()=>previewTrailer(i);
-  d.onmouseleave=()=>stopPreview();
-
   c.appendChild(d);
  });
-}
-
-/* TRAILER PREVIEW */
-let previewFrame;
-async function previewTrailer(i){
- if(previewFrame)return;
-
- const data=await fetchData(`https://api.themoviedb.org/3/${i.media_type||"movie"}/${i.id}/videos?api_key=${API_KEY}`);
- const trailer=data.results.find(v=>v.type==="Trailer");
-
- if(!trailer)return;
-
- previewFrame=document.createElement("iframe");
- previewFrame.src=`https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=1`;
- previewFrame.style.position="fixed";
- previewFrame.style.bottom="20px";
- previewFrame.style.right="20px";
- previewFrame.style.width="300px";
- previewFrame.style.height="170px";
- previewFrame.style.zIndex="999";
-
- document.body.appendChild(previewFrame);
-}
-
-function stopPreview(){
- if(previewFrame){
-  previewFrame.remove();
-  previewFrame=null;
- }
 }
 
 /* PLAYER */
@@ -340,17 +296,15 @@ function openPlayer(i){
  const year=(i.release_date||i.first_air_date||"").split("-")[0];
 
  document.getElementById("details").innerHTML=`
- <h3>${i.title||i.name} (${year||"N/A"})</h3>
- <p>${i.overview||"No description"}</p>
+ <h2>${i.title||i.name} (${year||""})</h2>
+ <p>${i.overview||""}</p>
  `;
 
- const season=document.getElementById("season");
-
  if(i.media_type==="tv"||i.name){
-  season.style.display="block";
+  document.getElementById("season").style.display="block";
   loadTV(i.id);
  }else{
-  season.style.display="none";
+  document.getElementById("season").style.display="none";
   playMovie(i.id);
  }
 
@@ -359,19 +313,7 @@ function openPlayer(i){
 
 /* PLAY */
 function playMovie(id){
- autoPlay(sources.map(f=>f(id)));
-}
-
-function autoPlay(list){
- let i=0;
- const f=document.getElementById("frame");
-
- function next(){
-  if(i>=list.length)return;
-  f.src=list[i++];
- }
-
- next();
+ document.getElementById("frame").src=`https://vidsrc.to/embed/movie/${id}`;
 }
 
 /* TV */
@@ -408,26 +350,20 @@ async function loadEpisodes(id,sn){
    </div>
   `;
 
-  b.onclick=()=>autoPlay([
-   `https://vidsrc.to/embed/tv/${id}/${sn}/${e.episode_number}`
-  ]);
+  b.onclick=()=>{
+   document.getElementById("frame").src=
+   `https://vidsrc.to/embed/tv/${id}/${sn}/${e.episode_number}`;
+  };
 
   box.appendChild(b);
  });
 }
 
-/* CONTINUE WATCHING */
+/* CONTINUE */
 function saveContinue(i){
  let c=load("cont");
-
- const existing=c.find(x=>x.id===i.id);
-
- if(existing){
-  existing.progress=existing.progress+10||10;
- }else{
-  c.unshift({...i,progress:10});
- }
-
+ c=c.filter(x=>x.id!==i.id);
+ c.unshift(i);
  save("cont",c.slice(0,10));
  loadContinue();
 }
@@ -449,7 +385,6 @@ document.getElementById("search").addEventListener("input",async e=>{
 
  const d=await fetchData(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${q}`);
  display(d.results,"trending");
- document.getElementById("top").innerHTML="";
 });
 
 /* INIT */
