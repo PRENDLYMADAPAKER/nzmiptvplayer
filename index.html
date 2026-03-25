@@ -1,64 +1,212 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>NZMflix</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PremiumFlix V2</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+<style>
+body {
+  background:#0b0f1a;
+  font-family:'Inter',sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+  width:70px;
+  transition:0.3s;
+}
+.sidebar:hover {
+  width:200px;
+}
+
+/* Hover cards */
+.movie-card {
+  transition:0.3s;
+}
+.movie-card:hover {
+  transform:scale(1.15);
+  z-index:20;
+}
+
+/* Hero video */
+.hero video {
+  position:absolute;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* Glass */
+.glass {
+  background:rgba(0,0,0,0.5);
+  backdrop-filter:blur(10px);
+}
+</style>
 </head>
-<body>
 
-  <!-- NAVBAR -->
-  <header class="navbar">
-    <h2 class="logo">NZMflix</h2>
-    <input type="text" id="search" placeholder="Search movies...">
-  </header>
+<body class="text-white flex">
 
-  <!-- HERO -->
-  <section id="hero">
-    <div class="hero-content">
-      <h1 id="hero-title">Welcome</h1>
-      <p id="hero-desc">Click a movie to watch trailer</p>
+<!-- SIDEBAR -->
+<div class="sidebar glass h-screen fixed flex flex-col p-4 space-y-6">
+
+<h1 class="text-blue-400 font-bold text-xl">P+</h1>
+
+<button onclick="loadHome()">🏠 Home</button>
+<button onclick="loadWatchlist()">⭐ Watchlist</button>
+
+</div>
+
+<!-- MAIN -->
+<div class="ml-[70px] w-full">
+
+<!-- HERO -->
+<div id="hero" class="hero h-[70vh] relative flex items-end p-10">
+<div class="z-10">
+<h1 id="heroTitle" class="text-4xl font-bold"></h1>
+<p id="heroDesc" class="max-w-md text-sm"></p>
+
+<div class="mt-3 space-x-2">
+<button onclick="playHero()" class="bg-white text-black px-4 py-2 rounded">Play</button>
+<button onclick="addWatchlistHero()" class="bg-gray-700 px-4 py-2 rounded">+ Watchlist</button>
+</div>
+</div>
+</div>
+
+<!-- SEARCH -->
+<div class="p-6">
+<input id="searchInput" placeholder="Search..."
+class="w-full p-3 rounded bg-gray-800 outline-none">
+</div>
+
+<!-- ROWS -->
+<div id="rows" class="px-6 space-y-8"></div>
+
+</div>
+
+  <script>
+const API_KEY = "2f7637ba9b3253a84483afa03480473a";
+const BASE = "https://api.themoviedb.org/3";
+const IMG = "https://image.tmdb.org/t/p/original";
+
+let heroMovie = null;
+
+// FETCH
+async function get(url){
+  const res = await fetch(url);
+  return (await res.json()).results;
+}
+
+// HERO WITH AUTO TRAILER
+async function loadHero(){
+  const movies = await get(`${BASE}/trending/movie/week?api_key=${API_KEY}`);
+  heroMovie = movies[Math.floor(Math.random()*movies.length)];
+
+  const hero = document.getElementById("hero");
+
+  const vidRes = await fetch(`${BASE}/movie/${heroMovie.id}?api_key=${API_KEY}&append_to_response=videos`);
+  const vidData = await vidRes.json();
+
+  const trailer = vidData.videos.results.find(v=>v.type==="Trailer");
+
+  if(trailer){
+    hero.innerHTML += `
+      <iframe src="https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=1&controls=0&loop=1"
+      class="absolute w-full h-full top-0 left-0"></iframe>
+    `;
+  } else {
+    hero.style.backgroundImage = `url(${IMG+heroMovie.backdrop_path})`;
+    hero.style.backgroundSize = "cover";
+  }
+
+  document.getElementById("heroTitle").innerText = heroMovie.title;
+  document.getElementById("heroDesc").innerText = heroMovie.overview;
+}
+
+// ROW
+function createRow(title, movies){
+  const row = document.createElement("div");
+
+  row.innerHTML = `
+    <h2 class="font-bold text-lg">${title}</h2>
+    <div class="flex space-x-3 overflow-x-scroll">
+      ${movies.map(m=>`
+        <img src="${IMG+m.poster_path}"
+        class="movie-card w-32 rounded cursor-pointer"
+        onclick="openMovie(${m.id})">
+      `).join("")}
     </div>
-  </section>
+  `;
 
-  <!-- ROWS -->
-  <section class="row">
-    <h2>Popular</h2>
-    <div class="row-posters" id="popular"></div>
-  </section>
+  document.getElementById("rows").appendChild(row);
+}
 
-  <section class="row">
-    <h2>Trending</h2>
-    <div class="row-posters" id="trending"></div>
-  </section>
+// LOAD HOME
+async function loadHome(){
+  document.getElementById("rows").innerHTML="";
 
-  <section class="row">
-    <h2>Action</h2>
-    <div class="row-posters" id="action"></div>
-  </section>
+  createRow("Trending", await get(`${BASE}/trending/movie/week?api_key=${API_KEY}`));
+  createRow("Top Rated", await get(`${BASE}/movie/top_rated?api_key=${API_KEY}`));
+  createRow("Action", await get(`${BASE}/discover/movie?api_key=${API_KEY}&with_genres=28`));
+}
 
-  <section class="row">
-    <h2>Horror</h2>
-    <div class="row-posters" id="horror"></div>
-  </section>
+// PLAYER
+async function openMovie(id){
+  const res = await fetch(`${BASE}/movie/${id}?api_key=${API_KEY}&append_to_response=videos`);
+  const data = await res.json();
 
-  <section class="row">
-    <h2>Favorites ❤️</h2>
-    <div class="row-posters" id="favorites"></div>
-  </section>
+  const trailer = data.videos.results.find(v=>v.type==="Trailer");
 
-  <!-- SEARCH RESULTS -->
-  <main id="search-results"></main>
+  if(trailer){
+    const win = window.open();
+    win.document.write(`
+      <style>body{margin:0;background:black}</style>
+      <iframe width="100%" height="100%"
+      src="https://www.youtube.com/embed/${trailer.key}?autoplay=1"
+      frameborder="0" allowfullscreen></iframe>
+    `);
+  }
+}
 
-  <!-- MODAL PLAYER -->
-  <div id="modal" class="modal hidden">
-    <div class="modal-content">
-      <span id="close">&times;</span>
-      <iframe id="player" frameborder="0" allowfullscreen></iframe>
-      <button id="favBtn">❤️ Add to Favorites</button>
-    </div>
-  </div>
+// WATCHLIST
+function addWatchlistHero(){
+  let list = JSON.parse(localStorage.getItem("watchlist")||"[]");
 
-  <script src="script.js"></script>
+  if(!list.find(m=>m.id===heroMovie.id)){
+    list.push(heroMovie);
+  }
+
+  localStorage.setItem("watchlist",JSON.stringify(list));
+  alert("Added to Watchlist ⭐");
+}
+
+function loadWatchlist(){
+  const list = JSON.parse(localStorage.getItem("watchlist")||"[]");
+
+  document.getElementById("rows").innerHTML="";
+  createRow("Your Watchlist", list);
+}
+
+// SEARCH
+document.getElementById("searchInput").addEventListener("input", async(e)=>{
+  const q = e.target.value;
+
+  if(q.length<3) return;
+
+  const res = await get(`${BASE}/search/movie?api_key=${API_KEY}&query=${q}`);
+
+  document.getElementById("rows").innerHTML="";
+  createRow("Search Results", res);
+});
+
+// INIT
+loadHero();
+loadHome();
+</script>
+
 </body>
 </html>
