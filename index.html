@@ -106,7 +106,7 @@
                 allowfullscreen="true" 
                 webkitallowfullscreen="true" 
                 mozallowfullscreen="true"
-                referrerpolicy="no-referrer"
+                referrerpolicy="origin"
                 sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation">
             </iframe>
         </div>
@@ -116,9 +116,9 @@
             <div id="serverUI">
                 <p style="font-size: 12px; color: #666; margin-bottom: 8px;">SWITCH SERVER (If stuck or slow):</p>
                 <div class="server-bar">
-                    <button class="server-btn active" onclick="changeServer(1, this)">Server 1 (Fast)</button>
-                    <button class="server-btn" onclick="changeServer(2, this)">Server 2 (Full-Res)</button>
-                    <button class="server-btn" onclick="changeServer(3, this)">Server 3 (HD)</button>
+                    <button class="server-btn active" onclick="changeServer(1, this)">Server 1 (Vidsync)</button>
+                    <button class="server-btn" onclick="changeServer(2, this)">Server 2 (Vidsrc VIP)</button>
+                    <button class="server-btn" onclick="changeServer(3, this)">Server 3 (SuperEmbed)</button>
                 </div>
             </div>
 
@@ -255,11 +255,15 @@ function watchFull() {
     if (currentServer === 1) {
         url = type === 'tv' ? `https://vidsync.xyz/embed/tv/${id}/${s}/${e}` : `https://vidsync.xyz/embed/movie/${id}`;
     } else if (currentServer === 2) {
+        // Updated to vidsrc.cc (More stable 2026 provider)
         url = type === 'tv' 
-            ? `https://vidsrc.me/embed/tv?tmdb=${id}&sea=${s}&epi=${e}` 
-            : `https://vidsrc.me/embed/movie?tmdb=${id}`;
+            ? `https://vidsrc.cc/v2/embed/tv/${id}/${s}/${e}` 
+            : `https://vidsrc.cc/v2/embed/movie/${id}`;
     } else {
-        url = type === 'tv' ? `https://vidsrc.pro/embed/tv/${id}/${s}/${e}` : `https://vidsrc.pro/embed/movie/${id}`;
+        // Server 3 Alternative
+        url = type === 'tv' 
+            ? `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}` 
+            : `https://multiembed.mov/?video_id=${id}&tmdb=1`;
     }
 
     f.src = "about:blank"; 
