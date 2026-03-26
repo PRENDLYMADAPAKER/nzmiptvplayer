@@ -154,25 +154,17 @@ async function api(path) {
 }
 
 async function init() {
-    // Hero & Trending
     const phData = await api('/trending/all/day?region=PH');
     setHero(phData.results[0]);
     renderRow('ph-row', phData.results);
     renderRow('trending-row', (await api('/trending/all/week')).results);
-
-    // Genre Categories
     renderRow('action-row', (await api('/discover/movie?with_genres=28')).results);
     renderRow('comedy-row', (await api('/discover/movie?with_genres=35')).results);
     renderRow('family-row', (await api('/discover/movie?with_genres=10751')).results);
-    
-    // Animation/Anime/Cartoon
     renderRow('anime-row', (await api('/discover/tv?with_genres=16&with_keywords=210024')).results);
     renderRow('cartoon-row', (await api('/discover/tv?with_genres=16&without_keywords=210024')).results);
-    
-    // Sci-Fi & K-Drama
     renderRow('scifi-row', (await api('/discover/movie?with_genres=878')).results);
     renderRow('kdrama-row', (await api('/discover/tv?with_original_language=ko')).results);
-
     document.getElementById('loader').style.display = "none";
 }
 
@@ -262,11 +254,18 @@ function changeServer(num, btn) {
 
 function watchFull() {
     if (!activeItem) return;
+    const f = document.getElementById('mainFrame');
     const id = activeItem.id;
     const type = activeItem.first_air_date ? 'tv' : 'movie';
-    const f = document.getElementById('mainFrame');
     const { s, e } = currentEp;
-    document.getElementById('playerModal').scrollTo({top: 0, behavior: 'smooth'});
+
+    // AUTO FULLSCREEN TRIGGER (Critical for TV)
+    const container = document.getElementById('vidArea');
+    if (container.requestFullscreen) {
+        container.requestFullscreen().catch(() => {});
+    } else if (container.webkitRequestFullscreen) {
+        container.webkitRequestFullscreen();
+    }
 
     let url = "";
     if (currentServer === 1) {
@@ -282,6 +281,9 @@ function watchFull() {
 }
 
 function closeModal() {
+    if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+    }
     document.getElementById('playerModal').style.display = "none";
     document.getElementById('mainFrame').src = "";
     document.body.style.overflow = "auto";
