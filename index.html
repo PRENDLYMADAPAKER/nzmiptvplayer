@@ -92,7 +92,12 @@
     <div id="hero" class="hero"></div>
     <div class="section"><h3>Top Philippines</h3><div class="row" id="ph-row"></div></div>
     <div class="section"><h3>Trending Now</h3><div class="row" id="trending-row"></div></div>
+    <div class="section"><h3>Action Thrillers</h3><div class="row" id="action-row"></div></div>
+    <div class="section"><h3>Comedy Hits</h3><div class="row" id="comedy-row"></div></div>
+    <div class="section"><h3>Family Movies</h3><div class="row" id="family-row"></div></div>
     <div class="section"><h3>Anime Universe</h3><div class="row" id="anime-row"></div></div>
+    <div class="section"><h3>Cartoons</h3><div class="row" id="cartoon-row"></div></div>
+    <div class="section"><h3>Sci-Fi & Fantasy</h3><div class="row" id="scifi-row"></div></div>
     <div class="section"><h3>K-Drama</h3><div class="row" id="kdrama-row"></div></div>
 </main>
 
@@ -114,7 +119,7 @@
             <div id="metaContent"></div>
             
             <div id="serverUI">
-                <p style="font-size: 12px; color: #666; margin-bottom: 8px;">SWITCH SERVER (If stuck or slow):</p>
+                <p style="font-size: 12px; color: #666; margin-bottom: 8px;">SWITCH SERVER:</p>
                 <div class="server-bar">
                     <button class="server-btn active" onclick="changeServer(1, this)">Server 1 (Vidsync)</button>
                     <button class="server-btn" onclick="changeServer(2, this)">Server 2 (Vidsrc VIP)</button>
@@ -149,17 +154,31 @@ async function api(path) {
 }
 
 async function init() {
+    // Hero & Trending
     const phData = await api('/trending/all/day?region=PH');
     setHero(phData.results[0]);
     renderRow('ph-row', phData.results);
     renderRow('trending-row', (await api('/trending/all/week')).results);
+
+    // Genre Categories
+    renderRow('action-row', (await api('/discover/movie?with_genres=28')).results);
+    renderRow('comedy-row', (await api('/discover/movie?with_genres=35')).results);
+    renderRow('family-row', (await api('/discover/movie?with_genres=10751')).results);
+    
+    // Animation/Anime/Cartoon
     renderRow('anime-row', (await api('/discover/tv?with_genres=16&with_keywords=210024')).results);
+    renderRow('cartoon-row', (await api('/discover/tv?with_genres=16&without_keywords=210024')).results);
+    
+    // Sci-Fi & K-Drama
+    renderRow('scifi-row', (await api('/discover/movie?with_genres=878')).results);
     renderRow('kdrama-row', (await api('/discover/tv?with_original_language=ko')).results);
+
     document.getElementById('loader').style.display = "none";
 }
 
 function renderRow(id, data) {
     const container = document.getElementById(id);
+    if (!container) return;
     data.forEach(i => {
         if(!i.poster_path) return;
         const card = document.createElement('div');
@@ -186,7 +205,6 @@ async function openModal(i) {
     currentEp = { s: 1, e: 1 };
     document.getElementById('playerModal').style.display = "block";
     document.body.style.overflow = "hidden";
-    
     document.getElementById('mainFrame').src = "";
 
     const type = i.first_air_date ? 'tv' : 'movie';
@@ -248,28 +266,19 @@ function watchFull() {
     const type = activeItem.first_air_date ? 'tv' : 'movie';
     const f = document.getElementById('mainFrame');
     const { s, e } = currentEp;
-
     document.getElementById('playerModal').scrollTo({top: 0, behavior: 'smooth'});
 
     let url = "";
     if (currentServer === 1) {
         url = type === 'tv' ? `https://vidsync.xyz/embed/tv/${id}/${s}/${e}` : `https://vidsync.xyz/embed/movie/${id}`;
     } else if (currentServer === 2) {
-        // Updated to vidsrc.cc (More stable 2026 provider)
-        url = type === 'tv' 
-            ? `https://vidsrc.cc/v2/embed/tv/${id}/${s}/${e}` 
-            : `https://vidsrc.cc/v2/embed/movie/${id}`;
+        url = type === 'tv' ? `https://vidsrc.cc/v2/embed/tv/${id}/${s}/${e}` : `https://vidsrc.cc/v2/embed/movie/${id}`;
     } else {
-        // Server 3 Alternative
-        url = type === 'tv' 
-            ? `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}` 
-            : `https://multiembed.mov/?video_id=${id}&tmdb=1`;
+        url = type === 'tv' ? `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}` : `https://multiembed.mov/?video_id=${id}&tmdb=1`;
     }
 
     f.src = "about:blank"; 
-    setTimeout(() => {
-        f.src = url;
-    }, 100);
+    setTimeout(() => { f.src = url; }, 100);
 }
 
 function closeModal() {
