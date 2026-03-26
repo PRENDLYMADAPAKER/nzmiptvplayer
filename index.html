@@ -77,6 +77,7 @@
         
         #searchView { position: fixed; inset: 0; background: var(--bg); z-index: 1500; display: none; padding: 100px 5%; overflow-y: auto; }
         .search-box { width: 100%; max-width: 500px; display: block; margin: 0 auto 40px; padding: 15px 25px; background: #1a1a1a; border: 1px solid #333; color: white; border-radius: 50px; font-size: 18px; outline: none; }
+        .search-close { position: fixed; top: 20px; right: 20px; font-size: 30px; cursor: pointer; z-index: 1600; color: white; }
     </style>
 </head>
 <body>
@@ -85,7 +86,7 @@
 
 <header id="nav">
     <div class="logo" onclick="location.reload()">NZM FLIX</div>
-    <div onclick="toggleSearch()" style="cursor:pointer; font-size: 22px;">🔍</div>
+    <div onclick="toggleSearch()" style="cursor:pointer; font-size: 22px; padding: 10px;">🔍</div>
 </header>
 
 <main id="home">
@@ -107,27 +108,23 @@
         <div class="video-wrap" id="vidArea">
             <div class="loading-text">Requesting secure stream...</div>
             <iframe id="mainFrame" 
-    src=""
-    allow="autoplay; fullscreen; picture-in-picture; encrypted-media; gyroscope; accelerometer" 
-    allowfullscreen="true" 
-    webkitallowfullscreen="true" 
-    mozallowfullscreen="true"
-    referrerpolicy="origin"
-    style="width: 100%; height: 100%; border: none;">
-</iframe>
+                allow="autoplay; fullscreen; picture-in-picture; encrypted-media; gyroscope; accelerometer" 
+                allowfullscreen="true" 
+                webkitallowfullscreen="true" 
+                mozallowfullscreen="true"
+                referrerpolicy="origin">
+            </iframe>
         </div>
         <div class="info-wrap" style="padding: 20px;">
             <div id="metaContent"></div>
-            
             <div id="serverUI">
                 <p style="font-size: 12px; color: #666; margin-bottom: 8px;">SWITCH SERVER:</p>
                 <div class="server-bar">
-                    <button class="server-btn active" onclick="changeServer(1, this)">Server 1 (Vidsync)</button>
+                    <button class="server-btn active" onclick="changeServer(1, this)">Server 1</button>
                     <button class="server-btn" onclick="changeServer(2, this)">Server 2 (Vidsrc VIP)</button>
-                    <button class="server-btn" onclick="changeServer(3, this)">Server 3 (SuperEmbed)</button>
+                    <button class="server-btn" onclick="changeServer(3, this)">Server 3</button>
                 </div>
             </div>
-
             <div id="tvUI" style="display:none; margin-top: 20px;">
                 <select id="seasonSelect" class="season-sel" onchange="loadEpisodes()"></select>
                 <div id="episodeList"></div>
@@ -137,6 +134,7 @@
 </div>
 
 <div id="searchView">
+    <div class="search-close" onclick="history.back()">✕</div>
     <input type="text" id="searchInput" class="search-box" placeholder="Search movies or shows...">
     <div class="row" style="flex-wrap: wrap; justify-content: center; gap: 20px;" id="searchRes"></div>
 </div>
@@ -154,6 +152,12 @@ async function api(path) {
     return r.json();
 }
 
+// THE FIX: Handling the Back Button correctly for both Player and Search
+window.onpopstate = function(event) {
+    closeModalLogic();
+    closeSearchLogic();
+};
+
 async function init() {
     const phData = await api('/trending/all/day?region=PH');
     setHero(phData.results[0]);
@@ -168,11 +172,6 @@ async function init() {
     renderRow('kdrama-row', (await api('/discover/tv?with_original_language=ko')).results);
     document.getElementById('loader').style.display = "none";
 }
-
-// BACK BUTTON HANDLING FOR TV
-window.onpopstate = function() {
-    closeModalLogic(); // Close modal if user hits 'Back'
-};
 
 function renderRow(id, data) {
     const container = document.getElementById(id);
@@ -201,10 +200,7 @@ function setHero(i) {
 async function openModal(i) {
     activeItem = i;
     currentEp = { s: 1, e: 1 };
-    
-    // Add history state so 'Back' closes the modal
     history.pushState({modal: true}, ""); 
-    
     document.getElementById('playerModal').style.display = "block";
     document.body.style.overflow = "hidden";
     document.getElementById('mainFrame').src = "";
@@ -269,7 +265,6 @@ function watchFull() {
     const type = activeItem.first_air_date ? 'tv' : 'movie';
     const { s, e } = currentEp;
 
-    // AUTO FULLSCREEN
     const container = document.getElementById('vidArea');
     if (container.requestFullscreen) { container.requestFullscreen().catch(() => {}); }
     else if (container.webkitRequestFullscreen) { container.webkitRequestFullscreen(); }
@@ -287,7 +282,6 @@ function watchFull() {
     setTimeout(() => { f.src = url; }, 100);
 }
 
-// Separated logic so it can be called by 'X' button or Browser Back
 function closeModalLogic() {
     if (document.fullscreenElement || document.webkitFullscreenElement) {
         document.exitFullscreen ? document.exitFullscreen().catch(()=>{}) : document.webkitExitFullscreen();
@@ -297,15 +291,25 @@ function closeModalLogic() {
     document.body.style.overflow = "auto";
 }
 
+// SEARCH LOGIC FIX
 function toggleSearch() {
     const s = document.getElementById('searchView');
     if (s.style.display !== 'block') {
         history.pushState({search: true}, "");
         s.style.display = 'block';
         document.getElementById('searchInput').focus();
+        document.body.style.overflow = "hidden";
     } else {
-        history.back();
+        history.back(); // Trigger the popstate to close it
     }
+}
+
+function closeSearchLogic() {
+    const s = document.getElementById('searchView');
+    s.style.display = "none";
+    document.body.style.overflow = "auto";
+    document.getElementById('searchInput').value = "";
+    document.getElementById('searchRes').innerHTML = "";
 }
 
 document.getElementById('searchInput').oninput = async (e) => {
@@ -319,7 +323,10 @@ document.getElementById('searchInput').oninput = async (e) => {
             const c = document.createElement('div');
             c.className = 'card';
             c.innerHTML = `<img class="card-img" src="${POSTER + i.poster_path}"><div class="card-name">${i.title || i.name}</div>`;
-            c.onclick = () => { history.back(); openModal(i); };
+            c.onclick = () => { 
+                closeSearchLogic(); // Use direct close here for speed
+                openModal(i); 
+            };
             res.appendChild(c);
         });
     }
