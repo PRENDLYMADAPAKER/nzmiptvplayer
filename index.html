@@ -3,196 +3,263 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NZM FLIX | Landscape Elite</title>
+    <title>NZM FLIX | Netflix 2026 Edition</title>
     <style>
-        :root { --red: #e50914; --bg: #050505; --glass: rgba(255, 255, 255, 0.1); --blur: blur(20px); }
-        body { margin: 0; background: var(--bg); color: white; font-family: 'Helvetica Neue', Arial, sans-serif; overflow-x: hidden; }
+        :root { 
+            --red: #E50914; --bg: #000000; --card-w: 140px; --card-h: 200px;
+            --glass: rgba(40, 40, 40, 0.7); --shimmer: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+        }
+        body { margin: 0; background: var(--bg); color: white; font-family: 'Inter', -apple-system, sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
         
+        /* --- PREMIUM HEADER --- */
         header { 
             position: fixed; top: 0; width: 100%; z-index: 1000; display: flex; 
-            justify-content: space-between; align-items: center; padding: 15px 4%;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
-            transition: 0.4s; box-sizing: border-box;
+            justify-content: space-between; align-items: center; padding: 12px 5%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
+            transition: 0.3s;
         }
-        header.scrolled { background: rgba(0,0,0,0.8); backdrop-filter: var(--blur); }
+        header.scrolled { background: var(--bg); border-bottom: 0.5px solid #333; }
+        .logo { color: var(--red); font-size: 26px; font-weight: 900; letter-spacing: -1.5px; text-transform: uppercase; cursor: pointer; }
 
-        .search-bar { background: rgba(255,255,255,0.1); border: 1px solid #444; padding: 6px 15px; border-radius: 20px; }
-        #search { background: transparent; border: none; color: white; outline: none; width: 110px; transition: 0.3s; }
-        #search:focus { width: 180px; }
+        /* --- HERO BANNER --- */
+        .hero { height: 80vh; background-size: cover; background-position: center top; position: relative; display: flex; align-items: flex-end; padding: 0 5% 60px; }
+        .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, var(--bg) 10%, transparent 50%), linear-gradient(to right, rgba(0,0,0,0.6), transparent); }
+        .hero-body { position: relative; z-index: 10; max-width: 600px; }
+        .hero-body h1 { font-size: 3rem; margin: 0 0 10px; font-weight: 800; line-height: 1; }
+        .hero-btns { display: flex; gap: 12px; margin-top: 20px; }
+        .btn { padding: 12px 28px; border-radius: 4px; font-weight: bold; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 15px; }
+        .btn-white { background: white; color: black; }
+        .btn-gray { background: rgba(109, 109, 110, 0.7); color: white; backdrop-filter: blur(10px); }
 
-        /* HERO & ROWS */
-        .hero { height: 70vh; display: flex; align-items: center; padding: 0 4%; background-size: cover; background-position: center; position: relative; }
-        .hero::after { content: ""; position: absolute; bottom: 0; left: 0; right: 0; height: 50%; background: linear-gradient(to top, var(--bg), transparent); }
-        .hero-content { position: relative; z-index: 2; max-width: 500px; }
-        .hero-content h1 { font-size: 2.5rem; margin: 0; font-weight: 900; }
-        
-        .section { padding: 20px 0 0 4%; }
-        .row { display: flex; gap: 10px; overflow-x: auto; padding: 15px 0; scrollbar-width: none; }
+        /* --- ROWS (Vertical Poster Style) --- */
+        .section { padding: 25px 0 0 5%; }
+        .section h3 { font-size: 1.1rem; margin-bottom: 12px; font-weight: 600; color: #e5e5e5; }
+        .row { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 15px; scroll-behavior: smooth; }
         .row::-webkit-scrollbar { display: none; }
         
-        .card { min-width: 160px; height: 90px; border-radius: 4px; overflow: hidden; position: relative; cursor: pointer; transition: 0.3s; }
-        .card:hover { transform: scale(1.1); z-index: 10; }
+        .card { 
+            min-width: var(--card-w); height: var(--card-h); border-radius: 6px; 
+            background: #111; overflow: hidden; position: relative; cursor: pointer;
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        .card:active { transform: scale(0.95); }
         .card img { width: 100%; height: 100%; object-fit: cover; }
-        .card-t { position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.7); padding: 5px; font-size: 11px; font-weight: bold; text-align: center; }
+        .card-info { 
+            position: absolute; bottom: 0; width: 100%; padding: 30px 8px 8px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            font-size: 11px; font-weight: 600; text-align: center;
+        }
 
-        /* PLAYER & SELECTOR */
-        .player-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; display: none; overflow-y: auto; }
-        .v-container { width: 100%; aspect-ratio: 16/9; background: #000; position: relative; }
-        #frame { width: 100%; height: 100%; border: none; }
+        /* --- SEARCH OVERLAY --- */
+        #searchView { position: fixed; inset: 0; background: var(--bg); z-index: 1500; display: none; padding: 100px 5% 20px; overflow-y: auto; }
+        .search-input { background: #222; border: none; color: white; padding: 12px 20px; border-radius: 8px; width: 100%; max-width: 400px; margin-bottom: 30px; }
+
+        /* --- PLAYER MODAL --- */
+        .modal { position: fixed; inset: 0; background: #000; z-index: 2000; display: none; overflow-y: auto; }
+        .video-box { width: 100%; aspect-ratio: 16/9; background: #000; position: sticky; top: 0; z-index: 100; }
+        iframe { width: 100%; height: 100%; border: none; }
         
-        .ep-box { padding: 20px 4%; }
-        .ep-card { display: flex; gap: 15px; padding: 12px; background: var(--glass); border-radius: 8px; margin-bottom: 10px; cursor: pointer; }
-        .ep-thumb { width: 110px; height: 62px; object-fit: cover; border-radius: 4px; }
-        .ep-info b { font-size: 14px; display: block; margin-bottom: 4px; }
-        .ep-info p { font-size: 11px; color: #aaa; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .content-details { padding: 20px 5%; }
+        .tag { color: #46d369; font-weight: bold; font-size: 13px; margin-bottom: 8px; display: block; }
+        
+        /* NETFLIX EPISODE SELECTOR */
+        .ep-selector { padding: 0 5% 100px; }
+        .season-dropdown { background: #333; color: white; border: none; padding: 10px 15px; border-radius: 4px; font-size: 14px; margin-bottom: 20px; width: 140px; }
+        .ep-row { display: flex; gap: 15px; padding: 15px 0; border-top: 1px solid #333; cursor: pointer; }
+        .ep-img { width: 130px; height: 74px; object-fit: cover; border-radius: 4px; flex-shrink: 0; }
+        .ep-meta b { font-size: 14px; display: block; margin-bottom: 4px; }
+        .ep-meta p { font-size: 12px; color: #999; margin: 0; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-        .close-btn { position: fixed; top: 15px; left: 15px; z-index: 3000; background: rgba(0,0,0,0.6); border: none; color: #fff; width: 35px; height: 35px; border-radius: 50%; font-size: 20px; cursor: pointer; }
-
-        #searchResult { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 1500; display: none; padding: 80px 4% 20px; overflow-y: auto; box-sizing: border-box; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
+        .close-btn { position: fixed; top: 20px; right: 20px; z-index: 3000; background: rgba(0,0,0,0.5); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; font-size: 18px; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <header id="nav">
-    <h2 onclick="location.reload()">NZM FLIX</h2>
-    <div class="search-bar"><input id="search" placeholder="Search titles..." autocomplete="off"></div>
+    <div class="logo" onclick="location.reload()">NZM FLIX</div>
+    <div style="display:flex; gap: 20px; align-items:center;">
+        <span onclick="toggleSearch()" style="font-size: 20px; cursor:pointer;">🔍</span>
+        <div style="width: 30px; height: 30px; background: #2b93d1; border-radius: 4px;"></div>
+    </div>
 </header>
 
-<div id="hero" class="hero"></div>
+<div id="home">
+    <div id="hero" class="hero"></div>
+    
+    <div class="section"><h3>Top 10 in the Philippines</h3><div class="row" id="top-ph"></div></div>
+    <div class="section"><h3>K-Drama Vibes</h3><div class="row" id="kdrama"></div></div>
+    <div class="section"><h3>Kids & Family</h3><div class="row" id="kids"></div></div>
+    <div class="section"><h3>Asian Action & Hits</h3><div class="row" id="asian"></div></div>
+</div>
 
-<div class="section"><h3>Trending</h3><div class="row" id="trending"></div></div>
-<div class="section"><h3>Anime</h3><div class="row" id="anime"></div></div>
+<div id="searchView">
+    <input type="text" class="search-input" id="searchField" placeholder="Search for a movie, series, or genre...">
+    <div class="row" style="flex-wrap: wrap; justify-content: space-between;" id="searchResults"></div>
+</div>
 
-<div id="searchResult"><div class="grid" id="searchGrid"></div></div>
-
-<div class="player-modal" id="player">
-    <button class="close-btn" onclick="closePlayer()">✕</button>
-    <div class="v-container" id="videoBox">
-        <iframe id="frame" allow="autoplay; fullscreen" allowfullscreen></iframe>
+<div class="modal" id="playerModal">
+    <button class="close-btn" onclick="closeModal()">✕</button>
+    <div class="video-box" id="vContainer">
+        <iframe id="mainFrame" allow="autoplay; fullscreen" allowfullscreen></iframe>
     </div>
-    <div style="padding: 20px 4%" id="pMeta"></div>
-    <div class="ep-box">
-        <select id="seasonSel" onchange="loadEps()" style="background:#222; color:white; border:1px solid #444; padding:10px; border-radius:4px; margin-bottom:20px; width:100%; max-width:200px;"></select>
-        <div id="epGrid"></div>
+    <div class="content-details" id="meta"></div>
+    <div class="ep-selector" id="tvTools">
+        <select class="season-dropdown" id="seasonSelect" onchange="loadEpisodes()"></select>
+        <div id="episodeList"></div>
     </div>
 </div>
 
 <script>
-const API = "2f7637ba9b3253a84483afa03480473a";
+const KEY = "2f7637ba9b3253a84483afa03480473a";
 const IMG = "https://image.tmdb.org/t/p/original";
-const THUMB = "https://image.tmdb.org/t/p/w500";
-let curItem = null;
+const POSTER = "https://image.tmdb.org/t/p/w342";
+let activeItem = null;
 
-async function fetchTMDB(p) { return (await fetch(`https://api.themoviedb.org/3${p}${p.includes('?') ? '&' : '?'}api_key=${API}`)).json(); }
-
-async function init() {
-    const t = await fetchTMDB('/trending/all/day');
-    setHero(t.results[0]);
-    fillRow('trending', t.results);
-    const a = await fetchTMDB('/discover/tv?with_genres=16');
-    fillRow('anime', a.results);
+async function call(path) {
+    const r = await fetch(`https://api.themoviedb.org/3${path}${path.includes('?') ? '&' : '?'}api_key=${KEY}`);
+    return r.json();
 }
 
-function fillRow(id, list) {
-    const row = document.getElementById(id);
-    list.forEach(i => {
-        if(!i.backdrop_path) return;
-        const c = document.createElement('div'); c.className = 'card';
-        c.innerHTML = `<img src="${THUMB+i.backdrop_path}"><div class="card-t">${i.title || i.name}</div>`;
-        c.onclick = () => openPlayer(i);
-        row.appendChild(c);
+async function init() {
+    // Top PH
+    const ph = await call('/trending/all/day?region=PH');
+    setHero(ph.results[0]);
+    renderRow('top-ph', ph.results);
+
+    // K-Drama
+    const kd = await call('/discover/tv?with_original_language=ko&with_genres=18');
+    renderRow('kdrama', kd.results);
+
+    // Kids (Animation + Family)
+    const kid = await call('/discover/movie?with_genres=16,10751');
+    renderRow('kids', kid.results);
+
+    // Asian (Chinese/Thai Hits)
+    const as = await call('/discover/tv?with_original_language=zh|th');
+    renderRow('asian', as.results);
+}
+
+function renderRow(id, data) {
+    const container = document.getElementById(id);
+    data.forEach(i => {
+        if(!i.poster_path) return;
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `<img src="${POSTER + i.poster_path}"><div class="card-info">${i.title || i.name}</div>`;
+        card.onclick = () => openItem(i);
+        container.appendChild(card);
     });
 }
 
 function setHero(i) {
     const h = document.getElementById('hero');
-    h.style.backgroundImage = `linear-gradient(to right, #050505, transparent), url(${IMG+i.backdrop_path})`;
-    h.innerHTML = `<div class="hero-content"><h1>${i.title || i.name}</h1><button style="background:white; color:black; border:none; padding:12px 30px; border-radius:4px; font-weight:bold; margin-top:15px; cursor:pointer;" onclick='openPlayer(${JSON.stringify(i).replace(/'/g,"")})'>▶ Play</button></div>`;
+    h.style.backgroundImage = `url(${IMG + i.backdrop_path})`;
+    h.innerHTML = `<div class="hero-overlay"></div>
+    <div class="hero-body">
+        <h1>${i.title || i.name}</h1>
+        <p style="color:#eee; font-size:14px; margin: 10px 0;">${i.overview.slice(0, 120)}...</p>
+        <div class="hero-btns">
+            <button class="btn btn-white" onclick='openItem(${JSON.stringify(i).replace(/'/g,"")})'><span>▶</span> Play</button>
+            <button class="btn btn-gray"><span>+</span> My List</button>
+        </div>
+    </div>`;
 }
 
-async function openPlayer(i) {
-    curItem = i;
-    const p = document.getElementById('player');
-    const f = document.getElementById('frame');
-    p.style.display = "block"; document.body.style.overflow = "hidden";
-    
+async function openItem(i) {
+    activeItem = i;
+    const m = document.getElementById('playerModal');
+    const f = document.getElementById('mainFrame');
+    m.style.display = "block";
+    document.body.style.overflow = "hidden";
+
     const type = i.first_air_date ? 'tv' : 'movie';
-    const v = await fetchTMDB(`/${type}/${i.id}/videos`);
+    const v = await call(`/${type}/${i.id}/videos`);
     const trailer = v.results.find(x => x.type === "Trailer") || v.results[0];
-    if(trailer) f.src = `https://www.youtube.com/embed/${trailer.key}?autoplay=1`;
+    if(trailer) f.src = `https://www.youtube.com/embed/${trailer.key}?autoplay=1&modestbranding=1`;
 
-    document.getElementById('pMeta').innerHTML = `<h2>${i.title || i.name}</h2><p style="color:#aaa; font-size:14px;">${i.overview}</p><button onclick="startStream(${i.id},'${type}')" style="background:white; color:black; width:100%; padding:15px; font-weight:bold; border-radius:4px; border:none; cursor:pointer;">▶ WATCH FULL SCREEN</button>`;
+    document.getElementById('meta').innerHTML = `
+        <span class="tag">98% Match • 2026 • 18+</span>
+        <h2 style="margin:0 0 10px;">${i.title || i.name}</h2>
+        <p style="color:#aaa; font-size:14px; line-height:1.6;">${i.overview}</p>
+        <button onclick="playFullScreen(${i.id}, '${type}')" style="background:var(--red); color:white; border:none; width:100%; padding:14px; border-radius:4px; font-weight:bold; margin-top:20px;">▶ WATCH NOW</button>
+    `;
 
-    if(type === 'tv') loadSeasons(i.id);
-    else { document.getElementById('seasonSel').style.display='none'; document.getElementById('epGrid').innerHTML=""; }
+    if(type === 'tv') loadTV(i.id);
+    else document.getElementById('tvTools').style.display = 'none';
 }
 
-async function loadSeasons(id) {
-    const d = await fetchTMDB(`/tv/${id}`);
-    const s = document.getElementById('seasonSel'); s.style.display='block'; s.innerHTML="";
-    d.seasons.forEach(x => { if(x.season_number > 0) s.innerHTML += `<option value="${x.season_number}">Season ${x.season_number}</option>`; });
-    loadEps();
+async function loadTV(id) {
+    const d = await call(`/tv/${id}`);
+    const sel = document.getElementById('seasonSelect');
+    document.getElementById('tvTools').style.display = 'block';
+    sel.innerHTML = "";
+    d.seasons.forEach(s => { if(s.season_number > 0) sel.innerHTML += `<option value="${s.season_number}">Season ${s.season_number}</option>`; });
+    loadEpisodes();
 }
 
-async function loadEps() {
-    const sNum = document.getElementById('seasonSel').value || 1;
-    const d = await fetchTMDB(`/tv/${curItem.id}/season/${sNum}`);
-    const g = document.getElementById('epGrid'); g.innerHTML="";
+async function loadEpisodes() {
+    const s = document.getElementById('seasonSelect').value || 1;
+    const d = await call(`/tv/${activeItem.id}/season/${s}`);
+    const list = document.getElementById('episodeList');
+    list.innerHTML = "";
     d.episodes.forEach(e => {
-        const div = document.createElement('div'); div.className='ep-card';
-        div.onclick = () => startStream(curItem.id, 'tv', sNum, e.episode_number);
-        div.innerHTML = `<img class="ep-thumb" src="${THUMB+e.still_path}"><div class="ep-info"><b>${e.episode_number}. ${e.name}</b><p>${e.overview}</p></div>`;
-        g.appendChild(div);
+        const div = document.createElement('div');
+        div.className = 'ep-row';
+        div.onclick = () => playFullScreen(activeItem.id, 'tv', s, e.episode_number);
+        div.innerHTML = `<img class="ep-img" src="${POSTER + e.still_path}">
+        <div class="ep-meta"><b>${e.episode_number}. ${e.name}</b><p>${e.overview}</p></div>`;
+        list.appendChild(div);
     });
 }
 
-async function startStream(id, type, s=1, e=1) {
-    const f = document.getElementById('frame');
-    const box = document.getElementById('videoBox');
+async function playFullScreen(id, type, s=1, e=1) {
+    const f = document.getElementById('mainFrame');
+    const box = document.getElementById('vContainer');
     
-    // STEP 1: Fullscreen the container
     if (box.requestFullscreen) await box.requestFullscreen();
     else if (box.webkitRequestFullscreen) await box.webkitRequestFullscreen();
 
-    // STEP 2: FORCE LANDSCAPE ROTATION (2026 Screen Orientation API)
     if (screen.orientation && screen.orientation.lock) {
-        try { await screen.orientation.lock('landscape'); } catch(e) { console.log("Orientation lock blocked"); }
+        try { await screen.orientation.lock('landscape'); } catch(err) { console.log("Orientation lock skipped"); }
     }
 
     f.src = type === 'tv' ? `https://vidsync.xyz/embed/tv/${id}/${s}/${e}?autoPlay=true` : `https://vidsync.xyz/embed/movie/${id}?autoPlay=true`;
 }
 
-function closePlayer() { 
-    document.getElementById('player').style.display="none"; 
-    document.getElementById('frame').src=""; 
-    document.body.style.overflow="auto";
-    if (document.fullscreenElement) {
-        document.exitFullscreen();
-        if(screen.orientation.unlock) screen.orientation.unlock();
-    }
+function closeModal() {
+    document.getElementById('playerModal').style.display = "none";
+    document.getElementById('mainFrame').src = "";
+    document.body.style.overflow = "auto";
+    if (document.fullscreenElement) document.exitFullscreen();
 }
 
-// FIXED SEARCH
-document.getElementById('search').oninput = async (e) => {
+function toggleSearch() {
+    const s = document.getElementById('searchView');
+    s.style.display = s.style.display === 'block' ? 'none' : 'block';
+}
+
+document.getElementById('searchField').oninput = async (e) => {
     const q = e.target.value;
-    const res = document.getElementById('searchResult');
-    const grid = document.getElementById('searchGrid');
+    const res = document.getElementById('searchResults');
     if(q.length > 2) {
-        res.style.display="block";
-        const d = await fetchTMDB(`/search/multi?query=${q}`);
-        grid.innerHTML = "";
+        const d = await call(`/search/multi?query=${q}`);
+        res.innerHTML = "";
         d.results.forEach(i => {
-            if(!i.backdrop_path) return;
-            const c = document.createElement('div'); c.className='card';
-            c.innerHTML = `<img src="${THUMB+i.backdrop_path}"><div class="card-t">${i.title || i.name}</div>`;
-            c.onclick = () => { res.style.display="none"; openPlayer(i); };
-            grid.appendChild(c);
+            if(!i.poster_path) return;
+            const c = document.createElement('div');
+            c.className = 'card'; style="margin-bottom:15px";
+            c.innerHTML = `<img src="${POSTER + i.poster_path}"><div class="card-info">${i.title || i.name}</div>`;
+            c.onclick = () => { toggleSearch(); openItem(i); };
+            res.appendChild(c);
         });
-    } else res.style.display="none";
+    }
 };
 
-window.onscroll = () => { const n = document.getElementById('nav'); window.scrollY > 50 ? n.classList.add('scrolled') : n.classList.remove('scrolled'); };
+window.onscroll = () => {
+    const n = document.getElementById('nav');
+    window.scrollY > 50 ? n.classList.add('scrolled') : n.classList.remove('scrolled');
+};
+
 init();
 </script>
 </body>
