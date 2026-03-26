@@ -100,8 +100,14 @@
     <button class="close-btn" onclick="closeModal()">✕</button>
     <div class="modal-content">
         <div class="video-wrap" id="vidArea">
-            <div class="loading-text">Requesting secure stream from server...</div>
-            <iframe id="mainFrame" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>
+            <div class="loading-text">Requesting secure stream...</div>
+            <iframe id="mainFrame" 
+                allow="autoplay; fullscreen; picture-in-picture; encrypted-media; gyroscope; accelerometer" 
+                allowfullscreen="true" 
+                webkitallowfullscreen="true" 
+                mozallowfullscreen="true"
+                referrerpolicy="no-referrer">
+            </iframe>
         </div>
         <div class="info-wrap" style="padding: 20px;">
             <div id="metaContent"></div>
@@ -111,7 +117,7 @@
                 <div class="server-bar">
                     <button class="server-btn active" onclick="changeServer(1, this)">Server 1 (Fast)</button>
                     <button class="server-btn" onclick="changeServer(2, this)">Server 2 (Full-Res)</button>
-                    <button class="server-btn" onclick="changeServer(3, this)">Server 3 (Backup)</button>
+                    <button class="server-btn" onclick="changeServer(3, this)">Server 3 (HD)</button>
                 </div>
             </div>
 
@@ -180,7 +186,6 @@ async function openModal(i) {
     document.getElementById('playerModal').style.display = "block";
     document.body.style.overflow = "hidden";
     
-    // Clear old iframe content
     document.getElementById('mainFrame').src = "";
 
     const type = i.first_air_date ? 'tv' : 'movie';
@@ -223,7 +228,8 @@ async function loadEpisodes() {
 function playEpisode(s, e) {
     currentEp = { s, e };
     document.querySelectorAll('.ep-card').forEach(c => c.classList.remove('active'));
-    document.getElementById(`ep-${s}-${e}`).classList.add('active');
+    const target = document.getElementById(`ep-${s}-${e}`);
+    if(target) target.classList.add('active');
     watchFull();
 }
 
@@ -236,24 +242,32 @@ function changeServer(num, btn) {
 }
 
 function watchFull() {
+    if (!activeItem) return;
     const id = activeItem.id;
     const type = activeItem.first_air_date ? 'tv' : 'movie';
     const f = document.getElementById('mainFrame');
     const { s, e } = currentEp;
 
-    // Scroll top for mobile users when playing
+    // Automatic scroll for mobile users
     document.getElementById('playerModal').scrollTo({top: 0, behavior: 'smooth'});
 
     let url = "";
     if (currentServer === 1) {
         url = type === 'tv' ? `https://vidsync.xyz/embed/tv/${id}/${s}/${e}` : `https://vidsync.xyz/embed/movie/${id}`;
     } else if (currentServer === 2) {
-        url = type === 'tv' ? `https://vidsrc.me/embed/tv?tmdb=${id}&sea=${s}&epi=${e}` : `https://vidsrc.me/embed/movie?tmdb=${id}`;
+        // Correct Vidsrc link structure for fullscreen compatibility
+        url = type === 'tv' 
+            ? `https://vidsrc.me/embed/tv?tmdb=${id}&sea=${s}&epi=${e}` 
+            : `https://vidsrc.me/embed/movie?tmdb=${id}`;
     } else {
         url = type === 'tv' ? `https://vidsrc.pro/embed/tv/${id}/${s}/${e}` : `https://vidsrc.pro/embed/movie/${id}`;
     }
 
-    f.src = url;
+    // KILL & RESTART to bypass sandbox locks
+    f.src = "about:blank"; 
+    setTimeout(() => {
+        f.src = url;
+    }, 50);
 }
 
 function closeModal() {
