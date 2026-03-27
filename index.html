@@ -13,37 +13,32 @@
         }
         body { margin: 0; background: var(--bg); color: white; font-family: 'Segoe UI', Roboto, sans-serif; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
 
-        /* LOADER */
         #loader { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; justify-content: center; align-items: center; transition: 0.6s; }
         .spinner { width: 50px; height: 50px; border: 4px solid rgba(229, 9, 20, 0.1); border-top: 4px solid var(--red); border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* NAVIGATION & TV D-PAD FOCUS */
         header { position: fixed; top: 0; width: 100%; z-index: 1000; display: flex; justify-content: space-between; padding: 20px 5%; box-sizing: border-box; background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent); transition: 0.3s; }
         header.scrolled { background: var(--bg); border-bottom: 1px solid #222; }
-        .logo { color: var(--red); font-size: 28px; font-weight: 900; cursor: pointer; outline: none; text-decoration: none; }
+        .logo { color: var(--red); font-size: 28px; font-weight: 900; cursor: pointer; outline: none; }
         
         .card:focus, .btn-red:focus, .srv-btn:focus, .logo:focus, .search-icon:focus, .ep-card:focus {
             outline: 3px solid white; transform: scale(1.08); z-index: 100; box-shadow: 0 0 25px var(--red);
         }
 
-        /* HERO SECTION */
         .hero { height: 75vh; background: center top/cover; position: relative; display: flex; align-items: flex-end; padding: 0 5% 60px; }
         .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, var(--bg) 10%, transparent 80%); }
         .hero-body { position: relative; z-index: 10; max-width: 700px; }
         .hero-body h1 { font-size: clamp(2.2rem, 6vw, 3.5rem); margin: 0; font-weight: 800; text-shadow: 2px 2px 10px rgba(0,0,0,0.8); }
 
-        /* ROWS & CARDS */
         .section { padding: 35px 0 0 5%; }
-        .section h3 { font-size: 1.3rem; margin-bottom: 10px; color: #e5e5e5; letter-spacing: 0.5px; }
+        .section h3 { font-size: 1.3rem; margin-bottom: 10px; color: #e5e5e5; display: flex; justify-content: space-between; align-items: center; padding-right: 5%; }
         .row { display: flex; gap: 18px; overflow-x: auto; padding: 15px 0 30px; scrollbar-width: none; scroll-behavior: smooth; }
         .row::-webkit-scrollbar { display: none; }
         
-        .card { min-width: var(--card-w); width: var(--card-w); cursor: pointer; border-radius: 6px; transition: 0.3s; position: relative; border: 2px solid transparent; outline: none; }
+        .card { min-width: var(--card-w); width: var(--card-w); cursor: pointer; border-radius: 6px; transition: 0.3s; position: relative; outline: none; }
         .card img { width: 100%; height: var(--card-h); object-fit: cover; border-radius: 6px; background: #111; pointer-events: none; }
         .card-name { font-size: 13px; margin-top: 10px; text-align: center; color: #aaa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* MODAL & VIDEO PLAYER */
         .modal { position: fixed; inset: 0; background: #000; z-index: 2500; display: none; overflow-y: auto; }
         .modal-content { display: flex; flex-direction: column; width: 100%; }
         @media (min-width: 1024px) {
@@ -56,17 +51,14 @@
         iframe { width: 100%; height: 100%; border: none; }
 
         .btn-red { background: var(--red); color: white; width: 100%; padding: 16px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 15px; outline: none; }
-        
         .srv-bar { display: flex; gap: 10px; margin: 15px 0; overflow-x: auto; scrollbar-width: none; }
-        .srv-btn { background: #222; color: #888; padding: 10px 20px; border-radius: 5px; border: 1px solid #333; cursor: pointer; white-space: nowrap; outline: none; }
+        .srv-btn { background: #222; color: #888; padding: 10px 20px; border-radius: 5px; border: 1px solid #333; cursor: pointer; outline: none; }
         .srv-btn.active { background: var(--red); color: white; border-color: var(--red); }
 
-        .ep-card { display: flex; gap: 15px; padding: 12px; background: #111; border-radius: 8px; margin-bottom: 10px; cursor: pointer; border: 1px solid transparent; outline: none; }
+        .ep-card { display: flex; gap: 15px; padding: 12px; background: #111; border-radius: 8px; margin-bottom: 10px; cursor: pointer; outline: none; }
         .ep-thumb { width: 130px; aspect-ratio: 16/9; object-fit: cover; border-radius: 4px; background: #222; }
-
         .close-btn { position: fixed; top: 20px; right: 20px; z-index: 3000; background: rgba(0,0,0,0.8); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 22px; }
 
-        /* SEARCH ENGINE */
         #searchView { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: none; padding: 110px 5% 50px; overflow-y: auto; }
         .search-bar { width: 100%; max-width: 600px; display: block; margin: 0 auto 40px; padding: 15px 25px; background: #111; border: 2px solid #333; color: white; border-radius: 50px; font-size: 18px; outline: none; }
     </style>
@@ -82,22 +74,26 @@
 
 <main id="home">
     <div id="hero" class="hero"></div>
-    <div class="section" id="lastWatchedSec" style="display:none;"><h3>🕒 Last Watched</h3><div class="row" id="last-row"></div></div>
+    
+    <div class="section" id="lastWatchedSec" style="display:none;">
+        <h3>🕒 Last Watched <small onclick="clearHist()" style="font-size:12px; color:var(--red); cursor:pointer;">[Clear All]</small></h3>
+        <div class="row" id="last-row"></div>
+    </div>
     
     <div class="section"><h3>🏆 Top Philippines</h3><div class="row" id="ph-row"></div></div>
     <div class="section"><h3>🔥 Trending Now</h3><div class="row" id="trend-row"></div></div>
-    <div class="section"><h3>K-Drama</h3><div class="row" id="kdrama-row"></div></div>
-    <div class="section"><h3>Asian</h3><div class="row" id="asian-row"></div></div>
-    <div class="section"><h3>Comedy</h3><div class="row" id="comedy-row"></div></div>
-    <div class="section"><h3>Action</h3><div class="row" id="action-row"></div></div>
-    <div class="section"><h3>Sci-Fi</h3><div class="row" id="scifi-row"></div></div>
-    <div class="section"><h3>Anime</h3><div class="row" id="anime-row"></div></div>
-    <div class="section"><h3>Kids</h3><div class="row" id="kids-row"></div></div>
-    <div class="section"><h3>Family</h3><div class="row" id="family-row"></div></div>
+    <div class="section"><h3>🎎 K-Drama</h3><div class="row" id="kdrama-row"></div></div>
+    <div class="section"><h3>🏮 Asian</h3><div class="row" id="asian-row"></div></div>
+    <div class="section"><h3>😂 Comedy</h3><div class="row" id="comedy-row"></div></div>
+    <div class="section"><h3>💥 Action</h3><div class="row" id="action-row"></div></div>
+    <div class="section"><h3>🚀 Sci-Fi</h3><div class="row" id="scifi-row"></div></div>
+    <div class="section"><h3>🎌 Anime</h3><div class="row" id="anime-row"></div></div>
+    <div class="section"><h3>🎈 Kids</h3><div class="row" id="kids-row"></div></div>
+    <div class="section"><h3>👨‍👩‍👧 Family</h3><div class="row" id="family-row"></div></div>
 </main>
 
 <div id="searchView">
-    <input type="text" id="searchInput" class="search-bar" placeholder="Search for movies, TV shows, or anime...">
+    <input type="text" id="searchInput" class="search-bar" placeholder="Search movies or shows...">
     <div class="row" style="flex-wrap:wrap; justify-content:center; gap: 20px;" id="searchRes"></div>
 </div>
 
@@ -114,7 +110,7 @@
                 <button class="srv-btn" tabindex="0" onclick="setSrv(4, this)">Server 4</button>
             </div>
             <div id="tvUI" style="display:none; margin-top:20px;">
-                <select id="seasonSelect" onchange="loadEps()" style="width:100%; padding:15px; background:#222; color:white; border:none; border-radius:8px; outline:none; cursor:pointer;"></select>
+                <select id="seasonSelect" onchange="loadEps()" style="width:100%; padding:15px; background:#222; color:white; border-radius:8px;"></select>
                 <div id="epList" style="margin-top:20px;"></div>
             </div>
         </div>
@@ -127,14 +123,15 @@ let active = null, srv = 1, curEp = {s:1, e:1};
 
 async function api(p) { return (await fetch(`https://api.themoviedb.org/3${p}${p.includes('?')?'&':'?'}api_key=${KEY}`)).json(); }
 
-window.onpopstate = () => { closeM(); closeSearch(); };
-
+// PERSISTENT HISTORY LOGIC
 function saveWatched(i) {
-    let list = JSON.parse(localStorage.getItem('nzm_history') || '[]');
-    list = list.filter(x => x.id !== i.id);
-    list.unshift(i);
-    localStorage.setItem('nzm_history', JSON.stringify(list.slice(0, 12)));
-    renderHistory();
+    try {
+        let list = JSON.parse(localStorage.getItem('nzm_history') || '[]');
+        list = list.filter(x => x.id !== i.id);
+        list.unshift(i);
+        localStorage.setItem('nzm_history', JSON.stringify(list.slice(0, 15)));
+        renderHistory();
+    } catch(e) { console.error("History fail:", e); }
 }
 
 function renderHistory() {
@@ -144,15 +141,25 @@ function renderHistory() {
         document.getElementById('lastWatchedSec').style.display = 'block';
         row.innerHTML = '';
         list.forEach(i => fillItem(row, i));
+    } else {
+        document.getElementById('lastWatchedSec').style.display = 'none';
     }
 }
 
+function clearHist() { if(confirm("Clear history?")) { localStorage.removeItem('nzm_history'); renderHistory(); } }
+
 async function init() {
+    // Attempt to request persistent storage
+    if (navigator.storage && navigator.storage.persist) {
+        navigator.storage.persist().then(granted => {
+            if (granted) console.log("Storage will not be cleared by the browser.");
+        });
+    }
+
     renderHistory();
     const tr = await api('/trending/all/week');
     setHero(tr.results[0]);
     
-    // FETCHING THE NEW CATEGORIES
     fill('ph-row', (await api('/trending/all/day?region=PH')).results);
     fill('trend-row', tr.results);
     fill('kdrama-row', (await api('/discover/tv?with_original_language=ko&sort_by=popularity.desc')).results);
@@ -193,7 +200,6 @@ async function openM(i) {
     document.getElementById('pModal').style.display = 'block';
     document.body.style.overflow = 'hidden';
 
-    // OFFICIAL YOUTUBE TRAILER SYSTEM
     const type = i.first_air_date ? 'tv' : 'movie';
     const vData = await api(`/${type}/${i.id}/videos`);
     const trailer = vData.results.find(v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser')) || vData.results[0];
@@ -205,7 +211,7 @@ async function openM(i) {
     document.getElementById('meta').innerHTML = `
         <h2 style="margin:0;">${i.title||i.name}</h2>
         <p style="color:#888; margin:10px 0; font-size:14px; line-height:1.5;">${i.overview}</p>
-        <button class="btn-red" tabindex="0" onclick="watch(true)">🚀 START MOVIE / SHOW</button>
+        <button class="btn-red" tabindex="0" onclick="watch(true)">🚀 PLAY CONTENT</button>
     `;
 
     if(i.first_air_date) {
@@ -222,7 +228,7 @@ async function loadEps() {
     document.getElementById('epList').innerHTML = d.episodes.map(e => `
         <div class="ep-card" tabindex="0" onclick="playEp(${s},${e.episode_number})">
             <img class="ep-thumb" src="${e.still_path ? POSTER+e.still_path : ''}">
-            <div style="flex:1"><b>${e.episode_number}. ${e.name}</b><p style="font-size:12px; color:#555; margin-top:5px;">${e.overview ? e.overview.slice(0,80) : 'No description'}...</p></div>
+            <div style="flex:1"><b>${e.episode_number}. ${e.name}</b></div>
         </div>
     `).join('');
 }
@@ -251,10 +257,7 @@ async function watch(goFull = false) {
 
     if(goFull) {
         const el = document.getElementById('vidContainer');
-        if(el.requestFullscreen) {
-            await el.requestFullscreen().catch(()=>{});
-            if(screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape').catch(()=>{});
-        }
+        if(el.requestFullscreen) el.requestFullscreen().catch(()=>{});
     }
 }
 
@@ -264,7 +267,6 @@ function toggleSearch() {
         history.pushState({search: true}, "");
         s.style.display = 'block';
         document.getElementById('searchInput').focus();
-        document.body.style.overflow = "hidden";
     } else history.back();
 }
 
@@ -277,10 +279,10 @@ document.getElementById('searchInput').oninput = async (e) => {
 
 function closeM() { 
     document.getElementById('pModal').style.display='none'; document.getElementById('frame').src=''; 
-    document.body.style.overflow='auto'; if(document.fullscreenElement) document.exitFullscreen(); 
+    document.body.style.overflow='auto'; 
 }
 function closeSearch() { document.getElementById('searchView').style.display='none'; document.body.style.overflow='auto'; }
-
+window.onpopstate = () => { closeM(); closeSearch(); };
 window.onscroll = () => document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 50);
 init();
 </script>
