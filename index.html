@@ -76,20 +76,20 @@
     <div id="hero" class="hero"></div>
     
     <div class="section" id="lastWatchedSec" style="display:none;">
-        <h3>🕒 Last Watched <small onclick="clearHist()" style="font-size:12px; color:var(--red); cursor:pointer;">[Clear All]</small></h3>
+        <h3>Last Watched <small onclick="clearHist()" style="font-size:12px; color:var(--red); cursor:pointer;">[Clear All]</small></h3>
         <div class="row" id="last-row"></div>
     </div>
     
-    <div class="section"><h3>🏆 Top Philippines</h3><div class="row" id="ph-row"></div></div>
-    <div class="section"><h3>🔥 Trending Now</h3><div class="row" id="trend-row"></div></div>
-    <div class="section"><h3>🎎 K-Drama</h3><div class="row" id="kdrama-row"></div></div>
-    <div class="section"><h3>🏮 Asian</h3><div class="row" id="asian-row"></div></div>
-    <div class="section"><h3>😂 Comedy</h3><div class="row" id="comedy-row"></div></div>
-    <div class="section"><h3>💥 Action</h3><div class="row" id="action-row"></div></div>
-    <div class="section"><h3>🚀 Sci-Fi</h3><div class="row" id="scifi-row"></div></div>
-    <div class="section"><h3>🎌 Anime</h3><div class="row" id="anime-row"></div></div>
-    <div class="section"><h3>🎈 Kids</h3><div class="row" id="kids-row"></div></div>
-    <div class="section"><h3>👨‍👩‍👧 Family</h3><div class="row" id="family-row"></div></div>
+    <div class="section"><h3>Top Philippines</h3><div class="row" id="ph-row"></div></div>
+    <div class="section"><h3>Trending Now</h3><div class="row" id="trend-row"></div></div>
+    <div class="section"><h3>K-Drama</h3><div class="row" id="kdrama-row"></div></div>
+    <div class="section"><h3>Asian</h3><div class="row" id="asian-row"></div></div>
+    <div class="section"><h3>Comedy</h3><div class="row" id="comedy-row"></div></div>
+    <div class="section"><h3>Action</h3><div class="row" id="action-row"></div></div>
+    <div class="section"><h3>Sci-Fi</h3><div class="row" id="scifi-row"></div></div>
+    <div class="section"><h3>Anime</h3><div class="row" id="anime-row"></div></div>
+    <div class="section"><h3>Kids</h3><div class="row" id="kids-row"></div></div>
+    <div class="section"><h3>Family</h3><div class="row" id="family-row"></div></div>
 </main>
 
 <div id="searchView">
@@ -211,7 +211,7 @@ async function openM(i) {
     document.getElementById('meta').innerHTML = `
         <h2 style="margin:0;">${i.title||i.name}</h2>
         <p style="color:#888; margin:10px 0; font-size:14px; line-height:1.5;">${i.overview}</p>
-        <button class="btn-red" tabindex="0" onclick="watch(true)">🚀 PLAY CONTENT</button>
+        <button class="btn-red" tabindex="0" onclick="watch(true)">Play Now</button>
     `;
 
     if(i.first_air_date) {
