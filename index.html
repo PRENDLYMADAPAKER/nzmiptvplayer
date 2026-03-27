@@ -38,7 +38,11 @@
         .card { min-width: var(--card-w); width: var(--card-w); cursor: pointer; border-radius: 6px; transition: 0.3s; position: relative; outline: none; }
         .card img { width: 100%; height: var(--card-h); object-fit: cover; border-radius: 6px; background: #111; pointer-events: none; }
         .card-name { font-size: 13px; margin-top: 10px; text-align: center; color: #aaa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .card-status { position: absolute; top: 10px; right: 10px; background: var(--red); font-size: 10px; padding: 2px 6px; border-radius: 3px; font-weight: bold; }
+        .card-status { position: absolute; top: 10px; right: 10px; background: var(--red); font-size: 10px; padding: 2px 6px; border-radius: 3px; font-weight: bold; z-index: 2; }
+
+        /* Buffer Line Styles */
+        .buffer-bg { height: 4px; background: #333; width: 100%; margin-top: -4px; border-radius: 0 0 4px 4px; overflow: hidden; position: relative; z-index: 1; }
+        .buffer-fill { height: 100%; background: var(--red); box-shadow: 0 0 10px var(--red); }
 
         .modal { position: fixed; inset: 0; background: #000; z-index: 2500; display: none; overflow-y: auto; }
         .modal-content { display: flex; flex-direction: column; width: 100%; }
@@ -78,20 +82,20 @@
     <div id="hero" class="hero"></div>
     
     <div class="section" id="lastWatchedSec" style="display:none;">
-        <h3>🕒 Last Watched <small onclick="clearHist()" style="font-size:12px; color:var(--red); cursor:pointer; margin-left:10px;">[Clear All]</small></h3>
+        <h3>Last Watched <small onclick="clearHist()" style="font-size:12px; color:var(--red); cursor:pointer; margin-left:10px;">[Clear All]</small></h3>
         <div class="row" id="last-row"></div>
     </div>
     
-    <div class="section"><h3>🏆 Top Philippines</h3><div class="row" id="ph-row"></div></div>
-    <div class="section"><h3>🔥 Trending Now</h3><div class="row" id="trend-row"></div></div>
-    <div class="section"><h3>🎎 K-Drama</h3><div class="row" id="kdrama-row"></div></div>
-    <div class="section"><h3>🏮 Asian</h3><div class="row" id="asian-row"></div></div>
-    <div class="section"><h3>😂 Comedy</h3><div class="row" id="comedy-row"></div></div>
-    <div class="section"><h3>💥 Action</h3><div class="row" id="action-row"></div></div>
-    <div class="section"><h3>🚀 Sci-Fi</h3><div class="row" id="scifi-row"></div></div>
-    <div class="section"><h3>🎌 Anime</h3><div class="row" id="anime-row"></div></div>
-    <div class="section"><h3>🎈 Kids</h3><div class="row" id="kids-row"></div></div>
-    <div class="section"><h3>👨‍👩‍👧 Family</h3><div class="row" id="family-row"></div></div>
+    <div class="section"><h3>Top Philippines</h3><div class="row" id="ph-row"></div></div>
+    <div class="section"><h3>Trending Now</h3><div class="row" id="trend-row"></div></div>
+    <div class="section"><h3>K-Drama</h3><div class="row" id="kdrama-row"></div></div>
+    <div class="section"><h3>Asian</h3><div class="row" id="asian-row"></div></div>
+    <div class="section"><h3>Comedy</h3><div class="row" id="comedy-row"></div></div>
+    <div class="section"><h3>Action</h3><div class="row" id="action-row"></div></div>
+    <div class="section"><h3>Sci-Fi</h3><div class="row" id="scifi-row"></div></div>
+    <div class="section"><h3>Anime</h3><div class="row" id="anime-row"></div></div>
+    <div class="section"><h3>Kids</h3><div class="row" id="kids-row"></div></div>
+    <div class="section"><h3>Family</h3><div class="row" id="family-row"></div></div>
 </main>
 
 <div id="searchView">
@@ -125,15 +129,15 @@ let active = null, srv = 1, curEp = {s:1, e:1};
 
 async function api(p) { return (await fetch(`https://api.themoviedb.org/3${p}${p.includes('?')?'&':'?'}api_key=${KEY}`)).json(); }
 
-// PERSISTENT HISTORY LOGIC WITH EPISODE TRACKING
-function saveWatched(i, s = 1, e = 1) {
+// PERSISTENT HISTORY LOGIC WITH EPISODE AND SERVER TRACKING
+function saveWatched(i, s = 1, e = 1, server = 1) {
     try {
         let list = JSON.parse(localStorage.getItem('nzm_history') || '[]');
         list = list.filter(x => x.id !== i.id);
         
-        // Inject current progress
         i.lastS = s;
         i.lastE = e;
+        i.lastSrv = server;
         i.timestamp = Date.now();
         
         list.unshift(i);
@@ -151,14 +155,20 @@ function renderHistory() {
         list.forEach(i => {
             const c = document.createElement('div'); c.className = 'card'; c.tabIndex = 0;
             const label = i.first_air_date ? `S${i.lastS}:E${i.lastE}` : 'Movie';
+            
+            // Visual Buffer Logic: simulated progress
+            const progress = i.first_air_date ? (i.lastE / 15) * 100 : 85;
+
             c.innerHTML = `
                 <img src="${POSTER+i.poster_path}">
+                <div class="buffer-bg"><div class="buffer-fill" style="width:${Math.min(progress, 100)}%"></div></div>
                 <div class="card-status">${label}</div>
                 <div class="card-name">${i.title||i.name}</div>
             `;
             c.onclick = () => {
                 curEp = { s: i.lastS || 1, e: i.lastE || 1 };
-                openM(i);
+                srv = i.lastSrv || 1;
+                openM(i, true); // True = One-Tap AutoPlay
             };
             row.appendChild(c);
         });
@@ -196,8 +206,8 @@ function fillItem(r, i) {
     if(!i.poster_path) return;
     const c = document.createElement('div'); c.className = 'card'; c.tabIndex = 0;
     c.innerHTML = `<img src="${POSTER+i.poster_path}"><div class="card-name">${i.title||i.name}</div>`;
-    c.onclick = () => { curEp = {s:1, e:1}; openM(i); };
-    c.onkeydown = (e) => { if(e.key === 'Enter') { curEp = {s:1, e:1}; openM(i); } };
+    c.onclick = () => { curEp = {s:1, e:1}; srv = 1; openM(i); };
+    c.onkeydown = (e) => { if(e.key === 'Enter') { curEp = {s:1, e:1}; srv = 1; openM(i); } };
     r.appendChild(c);
 }
 
@@ -211,25 +221,41 @@ function setHero(i) {
     </div>`;
 }
 
-async function openM(i) {
+async function openM(i, autoPlay = false) {
     active = i;
-    // Check history for existing progress to update local curEp state
     const hist = JSON.parse(localStorage.getItem('nzm_history') || '[]');
     const record = hist.find(x => x.id === i.id);
-    if(record) curEp = { s: record.lastS, e: record.lastE };
+    if(record) {
+        curEp = { s: record.lastS, e: record.lastE };
+        srv = record.lastSrv || 1;
+    }
 
     history.pushState({modal: true}, "");
     document.getElementById('pModal').style.display = 'block';
     document.body.style.overflow = 'hidden';
 
-    const type = i.first_air_date ? 'tv' : 'movie';
-    const vData = await api(`/${type}/${i.id}/videos`);
-    const trailer = vData.results.find(v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser')) || vData.results[0];
-    
-    const frame = document.getElementById('frame');
-    if(trailer) frame.src = `https://www.youtube.com/embed/${trailer.key}?autoplay=1&rel=0`;
-    else frame.src = "";
+    // Highlight current server in UI
+    document.querySelectorAll('.srv-btn').forEach((btn, idx) => {
+        btn.classList.toggle('active', (idx + 1) === srv);
+    });
 
+    if(autoPlay) {
+        watch(true); // Jump straight to stream
+        updateModalUI(i);
+    } else {
+        updateModalUI(i);
+        // Load YouTube Trailer
+        const type = i.first_air_date ? 'tv' : 'movie';
+        const vData = await api(`/${type}/${i.id}/videos`);
+        const trailer = vData.results.find(v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser')) || vData.results[0];
+        const frame = document.getElementById('frame');
+        if(trailer) frame.src = `https://www.youtube.com/embed/${trailer.key}?autoplay=1&rel=0`;
+        else frame.src = "";
+    }
+}
+
+function updateModalUI(i) {
+    const type = i.first_air_date ? 'tv' : 'movie';
     const btnLabel = type === 'tv' ? `RESUME S${curEp.s}:E${curEp.e}` : `PLAY MOVIE`;
 
     document.getElementById('meta').innerHTML = `
@@ -240,9 +266,10 @@ async function openM(i) {
 
     if(i.first_air_date) {
         document.getElementById('tvUI').style.display='block';
-        const d = await api(`/tv/${i.id}`);
-        document.getElementById('seasonSelect').innerHTML = d.seasons.filter(s=>s.season_number>0).map(s=>`<option value="${s.season_number}" ${s.season_number==curEp.s?'selected':''}>Season ${s.season_number}</option>`).join('');
-        loadEps();
+        api(`/tv/${i.id}`).then(d => {
+            document.getElementById('seasonSelect').innerHTML = d.seasons.filter(s=>s.season_number>0).map(s=>`<option value="${s.season_number}" ${s.season_number==curEp.s?'selected':''}>Season ${s.season_number}</option>`).join('');
+            loadEps();
+        });
     } else document.getElementById('tvUI').style.display='none';
 }
 
@@ -267,7 +294,7 @@ function setSrv(n, b) {
 }
 
 async function watch(goFull = false) {
-    saveWatched(active, curEp.s, curEp.e);
+    saveWatched(active, curEp.s, curEp.e, srv);
     const type = active.first_air_date ? 'tv' : 'movie';
     const id = active.id, {s, e} = curEp;
     
@@ -279,7 +306,7 @@ async function watch(goFull = false) {
     
     document.getElementById('frame').src = url;
 
-    if(goFull) {
+    if(goFull && window.innerWidth < 1024) {
         const el = document.getElementById('vidContainer');
         if(el.requestFullscreen) el.requestFullscreen().catch(()=>{});
     }
