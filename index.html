@@ -30,6 +30,7 @@
             box-shadow: 0 0 15px var(--red);
         }
 
+        /* UI Elements */
         .hero { height: 70vh; background: center top/cover; position: relative; display: flex; align-items: flex-end; padding: 0 5% 50px; }
         .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, var(--bg) 10%, transparent 90%); }
         .hero-body { position: relative; z-index: 5; max-width: 650px; }
@@ -188,7 +189,16 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
     if(q.length < 2) return;
     searchTimer = setTimeout(async () => {
         const d = await api(`/search/multi?query=${encodeURIComponent(q)}`);
-        fill('searchRes', (d.results || []).filter(x => x.poster_path));
+        const filtered = (d.results || []).filter(x => x.poster_path);
+        const r = document.getElementById('searchRes');
+        r.innerHTML = '';
+        filtered.forEach(i => {
+            const c = document.createElement('div');
+            c.className = 'card'; c.tabIndex = 0;
+            c.innerHTML = `<img src="${POSTER+i.poster_path}"><div class="card-name">${i.title||i.name}</div>`;
+            c.onclick = () => openM(i);
+            r.appendChild(c);
+        });
     }, 600);
 });
 
@@ -292,7 +302,7 @@ function closeM(back = true){
     if(back && history.state?.v === 'm') history.back();
 }
 
-function clearHist(){ if(confirm("Clear history?")){ localStorage.removeItem('nzm_history'); renderHistory(); } }
+function clearHist(){ localStorage.removeItem('nzm_history'); renderHistory(); }
 
 init();
 </script>
