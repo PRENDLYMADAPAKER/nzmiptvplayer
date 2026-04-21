@@ -2569,8 +2569,8 @@
       const id = item.id;
       const { s, e } = state.curEp;
       const urls = {
-        2: `https://vidsrc.cc/v2/embed/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}`,
-        1: `https://vidsync.xyz/embed/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}`
+        2: `https://vidsrc.me/embed/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}`,
+        1: `https://vidsrc.pro/embed/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}`
       };
       return urls[state.srv] || urls[2];
     }
