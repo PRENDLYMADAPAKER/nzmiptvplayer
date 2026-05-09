@@ -2690,7 +2690,8 @@
       const { s, e } = state.curEp;
       const urls = {
         2: `https://vidsrc.me/embed/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}`,
-        1: `https://vidsync.xyz/embed/${type === "tv" ? `&s=${s}&e=${e}` : ""}`
+        1: `https://vidsync.xyz/embed/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}`
+  }`
   };
       return urls[state.srv] || urls[2];
     }
