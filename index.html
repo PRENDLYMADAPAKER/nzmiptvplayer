@@ -2824,11 +2824,11 @@
     2: `https://vidsrc.me/embed/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}`,
 
     // Backup Server
-    1: `https://multiembed.mov/?video_id=${id}&tmdb=1${type === "tv" ? `&s=${s}&e=${e}` : ""}`,
+    1: `https://vidsync.xyz/embed/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}`
   };
 
   return urls[state.srv] || urls[2];
-    }
+                    }
 
     function updateServerButtons() {
       document.querySelectorAll(".srv-btn").forEach((btn) => {
