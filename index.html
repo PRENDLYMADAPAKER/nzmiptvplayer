@@ -2848,7 +2848,7 @@
     // 3 - Backup Server 2
     3: `https://vidlink.pro/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}?autoplay=true&autostart=true&muted=false`,
     // Backup Server 3
-    4: `https://player.cinepro.cc/embed/tv/${id}/${s}/${e} : ""}`
+    4: `https://player.cinepro.cc/embed/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}?autoplay=1`,
   };
 
   return urls[state.srv] || urls[1];
