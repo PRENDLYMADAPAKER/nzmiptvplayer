@@ -2839,10 +2839,10 @@
     1: `https://vidsrc.me/embed/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}`,
     
     // Backup Server 1
-    2: `https://vidlink.pro/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}?autoplay=true&autostart=true&muted=false`,
+    2: `https://vidfast.pro/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}?autoplay=true&cc=en`,
 
     // 3 - Backup Server 2
-    3: `https://vidfast.pro/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}?autoplay=true&cc=en`,
+    3: `https://apiplayer.ru/embed/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}?autoplay=1&sub=en`,
     };
 
   return urls[state.srv] || urls[1];
