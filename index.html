@@ -2849,6 +2849,7 @@
     3: `https://vidlink.pro/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}?autoplay=true&autostart=true&muted=false`,
     // Backup Server 3
     4: `https://embed.su/embed/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}`,
+    };
 
   return urls[state.srv] || urls[1];
 }
