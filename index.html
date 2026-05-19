@@ -2842,7 +2842,9 @@
     2: `https://vidfast.pro/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}?autoplay=true&cc=en`,
 
     // 3 - Backup Server 2
-    3: `https://vidsrc.to/embed/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}`,
+    3: type === "tv"
+  ? `https://embedmaster.link/tv/${id}/${s}/${e}?autoplay=1`
+  : `https://embedmaster.link/movie/${id}?autoplay=1`,
     };
 
   return urls[state.srv] || urls[1];
