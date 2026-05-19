@@ -2848,7 +2848,9 @@
     // 3 - Backup Server 2
     3: `https://vidlink.pro/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}?autoplay=true&autostart=true&muted=false`,
     // Backup Server 3
-    4: `https://ezvidapi.com/embed/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}?provider=vidrock`
+    4: type === "tv"
+  ? `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}`
+  : `https://multiembed.mov/?video_id=${id}&tmdb=1`,
     };
 
   return urls[state.srv] || urls[1];
