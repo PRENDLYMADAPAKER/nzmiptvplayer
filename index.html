@@ -2849,8 +2849,8 @@
     3: `https://vidlink.pro/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}?autoplay=true&autostart=true&muted=false`,
     // Backup Server 3
     4: type === "tv"
-  ? `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}`
-  : `https://multiembed.mov/?video_id=${id}&tmdb=1`,
+    ? `https://embedmaster.link/tv/${id}/${s}/${e}`
+    : `https://embedmaster.link/movie/${id}`,
     };
 
   return urls[state.srv] || urls[1];
