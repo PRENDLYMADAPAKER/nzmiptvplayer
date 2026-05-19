@@ -2843,8 +2843,8 @@
 
     // 3 - Backup Server 2
     3: type === "tv"
-  ? `https://embedmaster.link/tv/${id}/${s}/${e}?autoplay=1`
-  : `https://embedmaster.link/movie/${id}?autoplay=1`,
+  ? `https://em.cineby.qzz.io/tv/${id}/${s}/${e}`
+  : `https://em.cineby.qzz.io/movie/${id}`,
     };
 
   return urls[state.srv] || urls[1];
