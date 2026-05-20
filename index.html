@@ -2841,13 +2841,11 @@
 
   const urls = {
     // Main Server
-    1: `https://vidsrc.pm/embed/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}?autoplay=true`,
-    
+    1: `https://vidsrc.pm/embed/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}?autoplay=true`,    
     // Backup Server 1
-    2: `https://vidfast.pro/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}?autoplay=true&cc=en`,
-
+    2: `https://vidsrc.me/embed/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}?autoplay=true`,
     // 3 - Backup Server 2
-    3: `https://vidsrc.pm/embed/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}?dub=false`,
+    3: `https://vidfast.pro/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}?autoplay=true&cc=en`,
     };
 
   return urls[state.srv] || urls[1];
