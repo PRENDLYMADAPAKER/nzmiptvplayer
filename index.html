@@ -2847,9 +2847,7 @@
     2: `https://vidfast.pro/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}?autoplay=true&cc=en`,
 
     // 3 - Backup Server 2
-    3: type === "tv"
-  ? `https://vidphantom.live/embed/tv/${id}/${s}/${e}`
-  : `https://vidphantom.live/embed/movie/${id}`
+    3: `https://vidzee.wtf/embed/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}`,
     };
 
   return urls[state.srv] || urls[1];
