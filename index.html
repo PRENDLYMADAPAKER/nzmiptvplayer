@@ -2847,7 +2847,9 @@
     2: `https://vidfast.pro/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}?autoplay=true&cc=en`,
 
     // 3 - Backup Server 2
-    3: `https://vidapi.xyz/embed/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}`,
+    3: type === "tv"
+  ? `https://www.vidking.net/embed/tv/${id}/${s}/${e}`
+  : `https://www.vidking.net/embed/movie/${id}`,
     };
 
   return urls[state.srv] || urls[1];
