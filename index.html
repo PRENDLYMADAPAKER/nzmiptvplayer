@@ -2527,16 +2527,12 @@
         <div class="meta-desc" id="metaDesc"></div>
 
         <div class="srv-bar" id="srvBar">
-  <button class="srv-btn focusable active" type="button" data-srv="1">
+  <button class="srv-btn focusable active" type="button" data-srv="2">
     ⭐ Main Server
   </button>
 
-  <button class="srv-btn focusable" type="button" data-srv="2">
+  <button class="srv-btn focusable" type="button" data-srv="1">
     Backup Server 1
-  </button>
-
-  <button class="srv-btn focusable" type="button" data-srv="3">
-    Backup Server 2
   </button>
 
   <button id="fullscreenBtn" class="srv-btn focusable" type="button">
@@ -2560,9 +2556,6 @@
           <div id="epList" class="epList"></div>
         </div>
 
-        <div class="helper-bar">
-          TV Remote: Play is focused first • Arrow Keys / OK / Back • ALWAYS USE FIRST THE MAIN SERVER
-        </div>
       </div>
     </div>
   </section>
@@ -3887,15 +3880,10 @@
 
   const urls = {
     // Main Server
-    1: `https://vidsrc.pm/embed/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}?autoplay=true`,
+    2: `https://vidfast.me/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}?autoplay=true&sub=en&cc=1`,
     
     // Backup Server 1
-    2: `https://vidfast.me/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}?autoplay=true&sub=en&cc=1`,
-
-    // 3 - Backup Server 2
-    3:  type === "tv"
-  ? `https://player.videasy.net/tv/${id}/${s}/${e}?autoPlay=true`
-  : `https://player.videasy.net/movie/${id}?autoPlay=true`,
+    1: `https://vidsrc.pm/embed/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}?autoplay=true`,
     };
 
   return urls[state.srv] || urls[1];
