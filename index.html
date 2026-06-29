@@ -3828,7 +3828,7 @@
       const { s, e } = state.curEp;
       const urls = {
         2: `https://vidfast.me/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}?autoplay=true&sub=en&cc=1`,
-        1: `https://cinesrc.st/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}?autoplay=true&sub=en&cc=1`,
+        1: `https://vidsrc-embed.ru/${type}/${id}${type === "tv" ? `/${s}/${e}` : ""}?autoplay=true&sub=en&cc=1`,
       };
       return urls[state.srv] || urls[1];
     }
